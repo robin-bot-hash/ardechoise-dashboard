@@ -8,421 +8,308 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
   :root {
-    --bg: #0f0f0f;
-    --surface: #181818;
-    --surface2: #222222;
-    --border: rgba(255,255,255,0.08);
-    --text: #f0ede8;
-    --muted: rgba(240,237,232,0.45);
-    --hint: rgba(240,237,232,0.2);
-    --violet: #7c6fcd;
-    --jaune: #e8b84b;
-    --teal: #3db88a;
-    --coral: #e06b4a;
-    --blue: #4a90d9;
-    --radius: 12px;
+    --bg:#0f0f0f; --surface:#181818; --surface2:#222;
+    --border:rgba(255,255,255,0.08); --text:#f0ede8;
+    --muted:rgba(240,237,232,0.45); --hint:rgba(240,237,232,0.2);
+    --violet:#7c6fcd; --jaune:#e8b84b; --teal:#3db88a;
+    --coral:#e06b4a; --blue:#4a90d9; --pink:#c4547e; --radius:12px;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; min-height: 100vh; }
-
-  header { padding: 40px 48px 28px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
-  .header-left h1 { font-family: 'DM Serif Display', serif; font-size: 32px; font-weight: 400; color: var(--text); letter-spacing: -0.5px; }
-  .header-left p { color: var(--muted); font-size: 13px; margin-top: 4px; }
-  .header-badge { background: var(--jaune); color: #1a1200; font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 20px; letter-spacing: 0.05em; }
-
-  main { padding: 32px 48px; display: flex; flex-direction: column; gap: 28px; max-width: 1400px; margin: 0 auto; }
-
-  .kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
-  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
-  .kpi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; }
-  .kpi-value { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--text); line-height: 1; }
-  .kpi-sub { font-size: 11px; color: var(--muted); margin-top: 5px; }
-  .kpi-accent { border-left: 3px solid var(--jaune); }
-  .kpi-down { border-left: 3px solid var(--coral); }
-  .kpi-up { border-left: 3px solid var(--teal); }
-
-  .row2 { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
-  .row3 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
-  .card-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
-  .card-sub { font-size: 11px; color: var(--muted); margin-bottom: 20px; }
-
-  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
-  .filter-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); font-size: 11px; font-weight: 500; padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: all .15s; font-family: 'DM Sans', sans-serif; }
-  .filter-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
-  .filter-btn.active { background: var(--jaune); border-color: var(--jaune); color: #1a1200; }
-
-  .chart-wrap { position: relative; width: 100%; }
-  .h240 { height: 240px; }
-  .h280 { height: 280px; }
-  .h300 { height: 300px; }
-
-  .annotation { position: absolute; font-size: 10px; color: var(--muted); pointer-events: none; }
-
-  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 14px; }
-  .leg { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
-  .leg-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
-  .leg-line { width: 18px; height: 2px; border-radius: 1px; }
-
-  .tag-covid { display: inline-block; background: rgba(224,107,74,0.15); color: var(--coral); font-size: 10px; padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(224,107,74,0.3); }
-  .tag-record { display: inline-block; background: rgba(232,184,75,0.15); color: var(--jaune); font-size: 10px; padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(232,184,75,0.3); }
-
-  .insight-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-  .insight { background: var(--surface2); border-radius: 8px; padding: 14px 16px; }
-  .insight-num { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); }
-  .insight-txt { font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
-
-  footer { padding: 20px 48px; border-top: 1px solid var(--border); color: var(--hint); font-size: 11px; }
-
-  @media (max-width: 900px) {
-    main { padding: 20px; }
-    header { padding: 24px 20px; }
-    .kpis { grid-template-columns: 1fr 1fr; }
-    .row2, .row3 { grid-template-columns: 1fr; }
-    .insight-row { grid-template-columns: 1fr 1fr; }
-  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;min-height:100vh;}
+  header{padding:40px 48px 28px;border-bottom:1px solid var(--border);display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+  .header-left h1{font-family:'DM Serif Display',serif;font-size:32px;font-weight:400;letter-spacing:-0.5px;}
+  .header-left p{color:var(--muted);font-size:13px;margin-top:4px;}
+  .badge{background:var(--jaune);color:#1a1200;font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;letter-spacing:0.05em;}
+  main{padding:32px 48px;display:flex;flex-direction:column;gap:24px;max-width:1400px;margin:0 auto;}
+  .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
+  .kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;}
+  .kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;}
+  .kpi-value{font-family:'DM Serif Display',serif;font-size:28px;line-height:1;}
+  .kpi-sub{font-size:11px;color:var(--muted);margin-top:5px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;}
+  .card-title{font-size:13px;font-weight:500;margin-bottom:3px;}
+  .card-sub{font-size:11px;color:var(--muted);margin-bottom:16px;}
+  .row2{display:grid;grid-template-columns:2fr 1fr;gap:20px;}
+  .row3{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+  .fbtn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);font-size:11px;font-weight:500;padding:5px 12px;border-radius:20px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
+  .fbtn:hover{border-color:rgba(255,255,255,0.2);color:var(--text);}
+  .fbtn.active{background:var(--jaune);border-color:var(--jaune);color:#1a1200;}
+  .chart-wrap{position:relative;width:100%;}
+  .h260{height:260px;} .h280{height:280px;} .h300{height:300px;}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;}
+  .leg{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);}
+  .ld{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+  .tag-r{display:inline-block;background:rgba(232,184,75,0.15);color:var(--jaune);font-size:10px;padding:2px 7px;border-radius:4px;border:1px solid rgba(232,184,75,0.3);}
+  .tag-c{display:inline-block;background:rgba(224,107,74,0.15);color:var(--coral);font-size:10px;padding:2px 7px;border-radius:4px;border:1px solid rgba(224,107,74,0.3);}
+  .info-box{margin-top:12px;padding:10px 14px;background:rgba(61,184,138,0.1);border-radius:8px;border:1px solid rgba(61,184,138,0.2);font-size:12px;color:var(--teal);}
+  footer{padding:20px 48px;border-top:1px solid var(--border);color:var(--hint);font-size:11px;}
+  @media(max-width:900px){main{padding:16px;}.kpis{grid-template-columns:1fr 1fr;}.row2,.row3{grid-template-columns:1fr;}header{padding:24px 16px;}}
 </style>
 </head>
 <body>
-
 <header>
   <div class="header-left">
     <h1>L'Ardéchoise</h1>
-    <p>Tableau de bord — Évolution des participants 1992–2025</p>
+    <p>Tableau de bord · Évolution des participants 1992–2025</p>
   </div>
-  <span class="header-badge">Données raceresult.com + Wikipedia</span>
+  <span class="badge">raceresult.com + Wikipedia + ardechoise.com</span>
 </header>
-
 <main>
 
-  <!-- KPIs -->
   <div class="kpis">
-    <div class="kpi kpi-accent">
+    <div class="kpi" style="border-left:3px solid var(--jaune)">
       <p class="kpi-label">Record historique</p>
       <p class="kpi-value">16 768</p>
       <p class="kpi-sub">2016 — pic absolu</p>
     </div>
-    <div class="kpi kpi-down">
+    <div class="kpi" style="border-left:3px solid var(--coral)">
       <p class="kpi-label">Participants 2025</p>
-      <p class="kpi-value">8 353</p>
-      <p class="kpi-sub">−50 % vs record 2016</p>
+      <p class="kpi-value">11 157</p>
+      <p class="kpi-sub">−34 % vs record 2016</p>
     </div>
-    <div class="kpi kpi-up">
+    <div class="kpi" style="border-left:3px solid var(--teal)">
       <p class="kpi-label">VAE 2025</p>
       <p class="kpi-value">624</p>
       <p class="kpi-sub">6,7 % des cyclotouristes · +13 % vs 2024</p>
     </div>
     <div class="kpi" style="border-left:3px solid var(--violet)">
-      <p class="kpi-label">Tranche dominante</p>
+      <p class="kpi-label">Tranche dominante 2025</p>
       <p class="kpi-value">52,7 %</p>
-      <p class="kpi-sub">50–64 ans en 2025 · cible VAE</p>
+      <p class="kpi-sub">50–64 ans · cible prioritaire VAE</p>
     </div>
   </div>
 
   <!-- Évolution historique -->
   <div class="card">
     <p class="card-title">Évolution du nombre de participants</p>
-    <p class="card-sub">Total inscrit par édition · 1992–2025 · Les années COVID (2020–2021) sont annulées</p>
-
-    <div class="filters" id="filters-histo">
-      <button class="filter-btn active" data-key="total">Total</button>
-      <button class="filter-btn" data-key="j1">1 Jour</button>
-      <button class="filter-btn" data-key="pj">Plusieurs jours (2J+3J+4J)</button>
-      <button class="filter-btn" data-key="av">Ardèche Verte</button>
-      <button class="filter-btn" data-key="jeunes">Ardéchoise des Jeunes</button>
+    <p class="card-sub">Par type d'épreuve · 1992–2025 · 2020 et 2021 annulées (COVID)</p>
+    <div class="filters" id="fhisto">
+      <button class="fbtn active" data-key="total">Total</button>
+      <button class="fbtn" data-key="j1">Cyclosportif (1J)</button>
+      <button class="fbtn" data-key="j2">2 Jours</button>
+      <button class="fbtn" data-key="j3">3 Jours</button>
+      <button class="fbtn" data-key="j4">4 Jours</button>
+      <button class="fbtn" data-key="av">Cyclotouriste & Gravel</button>
+      <button class="fbtn" data-key="jeunes">Jeunes</button>
     </div>
-
-    <div class="chart-wrap h300">
-      <canvas id="chartHisto"></canvas>
-    </div>
-
+    <div class="chart-wrap h300"><canvas id="cHisto"></canvas></div>
     <div class="legend">
-      <span class="leg"><span class="leg-dot" style="background:var(--jaune)"></span>Total participants</span>
-      <span class="leg"><span class="tag-record">★ Record</span> 2016 : 16 768</span>
-      <span class="leg"><span class="tag-covid">✕ COVID</span> 2020–2021 annulées</span>
+      <span class="leg"><span class="tag-r">★ Record</span>&nbsp;2016 : 16 768</span>
+      <span class="leg"><span class="tag-c">✕ COVID</span>&nbsp;2020–2021 annulées</span>
+      <span class="leg" style="color:var(--muted);font-size:11px">* 2024 : 4J à confirmer · Cyclotouriste+Gravel regroupés depuis 2024</span>
     </div>
   </div>
 
-  <!-- Répartition épreuves + VAE -->
+  <!-- Répartition + VAE -->
   <div class="row2">
-
     <div class="card">
       <p class="card-title">Répartition par type d'épreuve</p>
-      <p class="card-sub">Volumes par catégorie · années disponibles</p>
-      <div class="chart-wrap h280">
-        <canvas id="chartStack"></canvas>
-      </div>
-      <div class="legend" style="margin-top:12px">
-        <span class="leg"><span class="leg-dot" style="background:var(--violet)"></span>Cyclosportif (1J)</span>
-        <span class="leg"><span class="leg-dot" style="background:var(--blue)"></span>Plusieurs jours</span>
-        <span class="leg"><span class="leg-dot" style="background:var(--teal)"></span>Ardèche Verte</span>
-        <span class="leg"><span class="leg-dot" style="background:var(--jaune)"></span>Jeunes</span>
+      <p class="card-sub">Volumes annuels empilés · années avec données complètes</p>
+      <div class="chart-wrap h280"><canvas id="cStack"></canvas></div>
+      <div class="legend">
+        <span class="leg"><span class="ld" style="background:var(--violet)"></span>Cyclosportif (1J)</span>
+        <span class="leg"><span class="ld" style="background:var(--blue)"></span>2 Jours</span>
+        <span class="leg"><span class="ld" style="background:#9b59b6"></span>3 Jours</span>
+        <span class="leg"><span class="ld" style="background:#2980b9"></span>4 Jours</span>
+        <span class="leg"><span class="ld" style="background:var(--teal)"></span>Cyclotouriste+Gravel</span>
+        <span class="leg"><span class="ld" style="background:var(--jaune)"></span>Jeunes</span>
       </div>
     </div>
-
     <div class="card">
       <p class="card-title">VAE vs Traditionnel</p>
-      <p class="card-sub">Épreuves cyclotouristes 2024–2025</p>
-      <div class="chart-wrap h180" style="height:180px">
-        <canvas id="chartVAE"></canvas>
-      </div>
-      <div style="margin-top:16px" class="insight-row" style="grid-template-columns:1fr 1fr">
-        <div class="insight">
-          <p class="insight-num" style="color:var(--teal)">+13 %</p>
-          <p class="insight-txt">Progression VAE<br>2024 → 2025</p>
-        </div>
-        <div class="insight">
-          <p class="insight-num" style="color:var(--coral)">3 779</p>
-          <p class="insight-txt">50–64 ans encore<br>en Tradi (2025)</p>
-        </div>
-      </div>
+      <p class="card-sub">Épreuves cyclotouristes · 2024 vs 2025</p>
+      <div class="chart-wrap h260"><canvas id="cVAE"></canvas></div>
+      <div class="info-box">Taux de pénétration VAE parmi les 50–64 ans : ~9 % en 2024 → ~14 % en 2025. Potentiel non capté : 3 779 participants.</div>
     </div>
-
   </div>
 
-  <!-- Profils participants -->
+  <!-- Profils -->
   <div class="row3">
-
     <div class="card">
       <p class="card-title">Tranches d'âge 2024 vs 2025</p>
       <p class="card-sub">Toutes épreuves confondues · en % du total</p>
-      <div class="chart-wrap h240">
-        <canvas id="chartAge"></canvas>
-      </div>
-      <div class="legend" style="margin-top:12px">
-        <span class="leg"><span class="leg-dot" style="background:var(--blue)"></span>2024</span>
-        <span class="leg"><span class="leg-dot" style="background:#7a7870"></span>2025</span>
-        <span class="leg"><span class="leg-dot" style="background:var(--jaune)"></span>Cible VAE 50–64 ans</span>
+      <div class="chart-wrap h260"><canvas id="cAge"></canvas></div>
+      <div class="legend">
+        <span class="leg"><span class="ld" style="background:var(--blue)"></span>2024</span>
+        <span class="leg"><span class="ld" style="background:#7a7870"></span>2025</span>
+        <span class="leg"><span class="ld" style="background:var(--jaune)"></span>50–64 ans (cible VAE)</span>
       </div>
     </div>
-
     <div class="card">
       <p class="card-title">Hommes / Femmes</p>
-      <p class="card-sub">Toutes épreuves confondues · 2024 vs 2025</p>
-      <div class="chart-wrap h240">
-        <canvas id="chartSexe"></canvas>
-      </div>
-      <div style="margin-top:16px;padding:10px 14px;background:rgba(61,184,138,0.1);border-radius:8px;border:1px solid rgba(61,184,138,0.2)">
-        <p style="font-size:12px;color:var(--teal)">Féminisation en hausse : 15 % → 18 % entre 2024 et 2025</p>
-      </div>
+      <p class="card-sub">Toutes épreuves · 2024 vs 2025</p>
+      <div class="chart-wrap h260"><canvas id="cSexe"></canvas></div>
+      <div class="info-box">Féminisation en hausse : 15 % → 18 % entre 2024 et 2025</div>
     </div>
-
   </div>
 
 </main>
-
-<footer>Sources : raceresult.com (2023–2025) · ardechoise.com/historique · Wikipedia · SOWINE/Dynata 2024 · Données VAE : épreuves cyclotouristes uniquement</footer>
+<footer>Sources : raceresult.com (2024–2025) · ardechoise.com/historique · Wikipedia · SOWINE/Dynata 2024 · VAE : épreuves cyclotouristes uniquement</footer>
 
 <script>
-const HISTO = {
-  years: [1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2022,2023,2024,2025],
-  total: [1296,2175,3268,4131,6857,9818,11184,10794,11905,10522,13526,15007,14257,13019,13643,12842,13187,13427,13014,15954,13094,13710,14717,15345,16768,15520,14816,14503,13000,11017,11740,8353],
-  j1:    [1296,2175,3268,4131,6857,9818,11184,10794,11905,10522,14246,12112,10213,8592,8428,8224,7760,7728,7126,9299,7315,7206,8092,8216,8757,8024,7691,7592,null,6569,2445,1796],
-  pj:    [null,null,null,null,null,null,null,null,null,null,1280,2895,4044,4427,4625,4618,4715,4724,4596,5337,4648,5173,5152,5715,6322,5092,4919,4577,null,2367,null,null],
-  av:    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1022,1289,1598,1263,1323,1805,1656,1876,2190,2042,1686,null,1381,null,null],
+const H = {
+  years:[1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2022,2023,2024,2025],
+  total:[1296,2175,3268,4131,6857,9818,11184,10794,11905,10522,13526,15007,14257,13019,13643,12842,13187,13427,13014,15954,13094,13710,14717,15345,16768,15520,14816,14503,13000,11017,12175,11157],
+  j1:   [1296,2175,3268,4131,6857,9818,11184,10794,11905,10522,14246,12112,10213,8592,8428,8224,7760,7728,7126,9299,7315,7206,8092,8216,8757,8024,7691,7592,null,6569,2741,1863],
+  j2:   [null,null,null,null,null,null,null,null,null,null,1280,2895,4044,2647,2332,2225,2057,1977,1777,2001,1649,1773,1658,1717,1882,1542,1604,1351,null,858,1168,976],
+  j3:   [null,null,null,null,null,null,null,null,null,null,null,null,null,1780,2293,2393,2658,2747,2543,2934,1909,2183,2331,2707,2674,2575,2371,2336,null,1509,1364,2075],
+  j4:   [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,276,402,1090,1217,1163,1291,1766,975,944,890,null,674,null,988],
+  av:   [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1022,1289,1598,1263,1323,1805,1656,1876,2190,2042,1686,null,1381,5734,5255],
   jeunes:[null,null,null,null,null,null,null,null,null,null,null,null,null,null,590,null,712,673,884,894,641,802,809,663,882,1011,944,1238,null,null,null,null],
 };
+const COLORS={total:'#e8b84b',j1:'#7c6fcd',j2:'#4a90d9',j3:'#9b59b6',j4:'#2980b9',av:'#3db88a',jeunes:'#e06b4a'};
+const LABELS={total:'Total',j1:'Cyclosportif (1J)',j2:'2 Jours',j3:'3 Jours',j4:'4 Jours',av:'Cyclotouriste+Gravel',jeunes:'Jeunes'};
+const gc='rgba(255,255,255,0.05)', tc='rgba(255,255,255,0.35)';
+Chart.defaults.color=tc; Chart.defaults.font.family='DM Sans,sans-serif';
 
-const COVID_YEARS = [2020, 2021];
-const COLORS = {
-  total: '#e8b84b', j1: '#7c6fcd', pj: '#4a90d9', av: '#3db88a', jeunes: '#e06b4a'
-};
-const LABELS = {
-  total: 'Total', j1: 'Cyclosportif (1J)', pj: 'Plusieurs jours', av: 'Ardèche Verte', jeunes: 'Jeunes'
-};
-
-const gridColor = 'rgba(255,255,255,0.05)';
-const tickColor = 'rgba(255,255,255,0.35)';
-
-Chart.defaults.color = tickColor;
-Chart.defaults.font.family = 'DM Sans, sans-serif';
-
-let histoChart;
-let activeKey = 'total';
-
-function buildHistoChart(key) {
-  const data = HISTO[key];
-  const years = HISTO.years;
-  const covidPlugin = {
-    id: 'covid',
-    afterDraw(chart) {
-      const ctx = chart.ctx;
-      const xScale = chart.scales.x;
-      const yScale = chart.scales.y;
-      [2016].forEach(yr => {
-        const idx = years.indexOf(yr);
-        if (idx < 0) return;
-        const x = xScale.getPixelForValue(idx);
-        ctx.save();
-        ctx.strokeStyle = 'rgba(232,184,75,0.3)';
-        ctx.setLineDash([4,4]);
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(x, yScale.top);
-        ctx.lineTo(x, yScale.bottom);
-        ctx.stroke();
-        ctx.fillStyle = 'rgba(232,184,75,0.7)';
-        ctx.font = '500 10px DM Sans, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('Record', x, yScale.top + 12);
-        ctx.restore();
-      });
-    }
-  };
-
-  const ctx = document.getElementById('chartHisto').getContext('2d');
-  if (histoChart) histoChart.destroy();
-
-  histoChart = new Chart(ctx, {
-    type: 'line',
-    plugins: [covidPlugin],
-    data: {
-      labels: years,
-      datasets: [{
-        label: LABELS[key],
-        data: data,
-        borderColor: COLORS[key],
-        backgroundColor: COLORS[key] + '18',
-        tension: 0.35,
-        fill: true,
-        pointRadius: (ctx) => {
-          const yr = years[ctx.dataIndex];
-          return yr === 2016 ? 6 : 3;
-        },
-        pointBackgroundColor: (ctx) => {
-          const yr = years[ctx.dataIndex];
-          return yr === 2016 ? '#e8b84b' : COLORS[key];
-        },
-        pointBorderColor: 'transparent',
-        spanGaps: false,
-        borderWidth: 2
+let hc;
+function buildHisto(key){
+  const recordPlugin={id:'rec',afterDraw(chart){
+    const ctx=chart.ctx,xs=chart.scales.x,ys=chart.scales.y;
+    const idx=H.years.indexOf(2016); if(idx<0)return;
+    const x=xs.getPixelForValue(idx);
+    ctx.save();ctx.strokeStyle='rgba(232,184,75,0.35)';ctx.setLineDash([4,4]);ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,ys.top);ctx.lineTo(x,ys.bottom);ctx.stroke();
+    ctx.fillStyle='rgba(232,184,75,0.8)';ctx.font='500 10px DM Sans,sans-serif';
+    ctx.textAlign='center';ctx.fillText('Record 2016',x,ys.top+12);ctx.restore();
+  }};
+  if(hc)hc.destroy();
+  hc=new Chart(document.getElementById('cHisto'),{
+    type:'line',plugins:[recordPlugin],
+    data:{
+      labels:H.years,
+      datasets:[{
+        label:LABELS[key],data:H[key],
+        borderColor:COLORS[key],backgroundColor:COLORS[key]+'18',
+        tension:0.35,fill:true,spanGaps:false,borderWidth:2.5,
+        pointRadius:ctx=>H.years[ctx.dataIndex]===2016?6:3,
+        pointBackgroundColor:ctx=>H.years[ctx.dataIndex]===2016?'#e8b84b':COLORS[key],
+        pointBorderColor:'transparent'
       }]
     },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
-      plugins: { legend: { display: false }, tooltip: {
-        backgroundColor: '#222',
-        borderColor: 'rgba(255,255,255,0.1)',
-        borderWidth: 1,
-        callbacks: { label: c => ' ' + (c.raw != null ? c.raw.toLocaleString('fr-FR') + ' participants' : 'Annulée') }
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#222',borderColor:'rgba(255,255,255,0.1)',borderWidth:1,
+        callbacks:{label:c=>' '+(c.raw!=null?c.raw.toLocaleString('fr-FR')+' participants':'Annulée ou données indisponibles')}
       }},
-      scales: {
-        x: { ticks: { color: tickColor, font: { size: 11 }, maxRotation: 45, autoSkip: true, maxTicksLimit: 16 }, grid: { color: gridColor }, border: { display: false } },
-        y: { ticks: { color: tickColor, font: { size: 11 }, callback: v => v >= 1000 ? (v/1000).toFixed(0)+'k' : v }, grid: { color: gridColor }, border: { display: false } }
+      scales:{
+        x:{ticks:{color:tc,font:{size:11},maxRotation:45,autoSkip:true,maxTicksLimit:16},grid:{color:gc},border:{display:false}},
+        y:{ticks:{color:tc,font:{size:11},callback:v=>v>=1000?(v/1000).toFixed(0)+'k':v},grid:{color:gc},border:{display:false}}
       }
     }
   });
 }
-
-document.getElementById('filters-histo').addEventListener('click', e => {
-  const btn = e.target.closest('.filter-btn');
-  if (!btn) return;
-  document.querySelectorAll('#filters-histo .filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  activeKey = btn.dataset.key;
-  buildHistoChart(activeKey);
+document.getElementById('fhisto').addEventListener('click',e=>{
+  const btn=e.target.closest('.fbtn'); if(!btn)return;
+  document.querySelectorAll('#fhisto .fbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); buildHisto(btn.dataset.key);
 });
+buildHisto('total');
 
-buildHistoChart('total');
-
-// Stacked chart
-new Chart(document.getElementById('chartStack'), {
-  type: 'bar',
-  data: {
-    labels: ['2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2023','2024','2025'],
-    datasets: [
-      { label: 'Cyclosportif (1J)', data: [8592,8428,8224,7760,7728,7126,9299,7315,7206,8092,8216,8757,8024,7691,7592,6569,2445,1796], backgroundColor: '#7c6fcd', borderRadius: 2, borderSkipped: false },
-      { label: 'Plusieurs jours', data: [4427,4625,4618,4715,4724,4596,5337,4648,5173,5152,5715,6322,5092,4919,4577,2367,9295,6557], backgroundColor: '#4a90d9', borderRadius: 2, borderSkipped: false },
-      { label: 'Ardèche Verte', data: [null,null,null,null,1022,1289,1598,1263,1323,1805,1656,1876,2190,2042,1686,1381,null,null], backgroundColor: '#3db88a', borderRadius: 2, borderSkipped: false },
-      { label: 'Jeunes', data: [null,590,null,712,673,884,894,641,802,809,663,882,1011,944,1238,null,null,null], backgroundColor: '#e8b84b', borderRadius: 2, borderSkipped: false },
+// Stacked
+new Chart(document.getElementById('cStack'),{
+  type:'bar',
+  data:{
+    labels:['2005','2006','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2023','2024','2025'],
+    datasets:[
+      {label:'Cyclosportif (1J)',data:[8592,8428,7760,7728,7126,9299,7315,7206,8092,8216,8757,8024,7691,7592,6569,2741,1863],backgroundColor:'#7c6fcd',borderRadius:2,borderSkipped:false},
+      {label:'2 Jours',         data:[2647,2332,2057,1977,1777,2001,1649,1773,1658,1717,1882,1542,1604,1351,858,1168,976],backgroundColor:'#4a90d9',borderRadius:2,borderSkipped:false},
+      {label:'3 Jours',         data:[1780,2293,2658,2747,2543,2934,1909,2183,2331,2707,2674,2575,2371,2336,1509,1364,2075],backgroundColor:'#9b59b6',borderRadius:2,borderSkipped:false},
+      {label:'4 Jours',         data:[null,null,null,null,276,402,1090,1217,1163,1291,1766,975,944,890,674,null,988],backgroundColor:'#2980b9',borderRadius:2,borderSkipped:false},
+      {label:'Cyclotouriste+Gravel',data:[null,null,null,1022,1289,1598,1263,1323,1805,1656,1876,2190,2042,1686,1381,5734,5255],backgroundColor:'#3db88a',borderRadius:2,borderSkipped:false},
+      {label:'Jeunes',          data:[null,590,712,673,884,894,641,802,809,663,882,1011,944,1238,null,null,null],backgroundColor:'#e8b84b',borderRadius:2,borderSkipped:false},
     ]
   },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false }, tooltip: {
-      backgroundColor: '#222', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, mode: 'index', intersect: false,
-      callbacks: { label: c => c.raw != null ? ' ' + c.dataset.label + ' : ' + c.raw.toLocaleString('fr-FR') : null }
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{backgroundColor:'#222',borderColor:'rgba(255,255,255,0.1)',borderWidth:1,mode:'index',intersect:false,
+      callbacks:{label:c=>c.raw!=null?' '+c.dataset.label+' : '+c.raw.toLocaleString('fr-FR'):null}
     }},
-    scales: {
-      x: { stacked: true, ticks: { color: tickColor, font: { size: 10 }, maxRotation: 45 }, grid: { display: false }, border: { display: false } },
-      y: { stacked: true, ticks: { color: tickColor, font: { size: 11 }, callback: v => v >= 1000 ? (v/1000).toFixed(0)+'k' : v }, grid: { color: gridColor }, border: { display: false } }
+    scales:{
+      x:{stacked:true,ticks:{color:tc,font:{size:10},maxRotation:45},grid:{display:false},border:{display:false}},
+      y:{stacked:true,ticks:{color:tc,font:{size:11},callback:v=>v>=1000?(v/1000).toFixed(0)+'k':v},grid:{color:gc},border:{display:false}}
     }
   }
 });
 
-// VAE chart
-new Chart(document.getElementById('chartVAE'), {
-  type: 'bar',
-  data: {
-    labels: ['2024', '2025'],
-    datasets: [
-      { label: 'VAE', data: [554, 624], backgroundColor: '#3db88a', borderRadius: 3, borderSkipped: false, stack: 's' },
-      { label: 'Potentiel non capté (50–64 Tradi)', data: [5531, 3779], backgroundColor: 'rgba(232,184,75,0.12)', borderColor: '#e8b84b', borderWidth: 1, borderRadius: 3, borderSkipped: false, stack: 's' }
+// VAE
+const lblPlugin={id:'lbl',afterDatasetsDraw(chart){
+  const ctx=chart.ctx;
+  chart.data.datasets.forEach((ds,di)=>{
+    if(!ds.showLbl)return;
+    chart.getDatasetMeta(di).data.forEach((bar,i)=>{
+      const val=ds.data[i]; if(!val)return;
+      const bh=bar.height||0;
+      ctx.save();ctx.font='500 12px DM Sans,sans-serif';ctx.textAlign='center';
+      if(bh>20){ctx.fillStyle=ds.lblC||'#fff';ctx.textBaseline='middle';ctx.fillText(val.toLocaleString('fr-FR'),bar.x,bar.y+bh/2);}
+      else{ctx.fillStyle=ds.lblCout||'rgba(255,255,255,0.8)';ctx.textBaseline='bottom';ctx.fillText(val.toLocaleString('fr-FR'),bar.x,bar.y-4);}
+      ctx.restore();
+    });
+  });
+}};
+new Chart(document.getElementById('cVAE'),{
+  type:'bar',plugins:[lblPlugin],
+  data:{
+    labels:['2024','2025'],
+    datasets:[
+      {label:'VAE',data:[554,624],backgroundColor:'#3db88a',borderRadius:3,borderSkipped:false,stack:'s',showLbl:true,lblC:'#fff',lblCout:'#3db88a'},
+      {label:'Potentiel non capté (50–64 Tradi)',data:[5531,3779],backgroundColor:'rgba(232,184,75,0.1)',borderColor:'#e8b84b',borderWidth:1.5,borderRadius:3,borderSkipped:false,stack:'s',showLbl:true,lblC:'#e8b84b',lblCout:'#e8b84b'},
     ]
   },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false }, tooltip: {
-      backgroundColor: '#222', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, mode: 'index', intersect: false,
-      callbacks: { label: c => ' ' + c.dataset.label + ' : ' + c.raw.toLocaleString('fr-FR') }
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{backgroundColor:'#222',borderColor:'rgba(255,255,255,0.1)',borderWidth:1,mode:'index',intersect:false,
+      callbacks:{label:c=>' '+c.dataset.label+' : '+c.raw.toLocaleString('fr-FR')}
     }},
-    scales: {
-      x: { stacked: true, ticks: { color: tickColor, font: { size: 13, weight: '500' } }, grid: { display: false }, border: { display: false } },
-      y: { stacked: true, ticks: { color: tickColor, font: { size: 11 }, callback: v => v.toLocaleString('fr-FR') }, grid: { color: gridColor }, border: { display: false } }
+    scales:{
+      x:{stacked:true,ticks:{color:tc,font:{size:13,weight:'500'}},grid:{display:false},border:{display:false}},
+      y:{stacked:true,ticks:{color:tc,font:{size:11},callback:v=>v.toLocaleString('fr-FR')},grid:{color:gc},border:{display:false}}
     }
   }
 });
 
-// Age chart
-new Chart(document.getElementById('chartAge'), {
-  type: 'bar',
-  data: {
-    labels: ['< 35 ans', '35–49 ans', '50–64 ans', '65 ans +'],
-    datasets: [
-      { label: '2024', data: [8.8, 30.3, 51.8, 9.0], backgroundColor: ['#4a90d9','#4a90d9','#e8b84b','#4a90d9'], borderRadius: 4, borderSkipped: false },
-      { label: '2025', data: [7.8, 29.1, 52.7, 10.4], backgroundColor: ['#7a7870','#7a7870','#ba7517','#7a7870'], borderRadius: 4, borderSkipped: false }
+// Age
+new Chart(document.getElementById('cAge'),{
+  type:'bar',
+  data:{
+    labels:['< 35 ans','35–49 ans','50–64 ans','65 ans +'],
+    datasets:[
+      {label:'2024',data:[8.8,30.3,51.8,9.0],backgroundColor:['#4a90d9','#4a90d9','#e8b84b','#4a90d9'],borderRadius:4,borderSkipped:false},
+      {label:'2025',data:[7.8,29.1,52.7,10.4],backgroundColor:['#7a7870','#7a7870','#ba7517','#7a7870'],borderRadius:4,borderSkipped:false}
     ]
   },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false }, tooltip: {
-      backgroundColor: '#222', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, mode: 'index', intersect: false,
-      callbacks: { label: c => ' ' + c.dataset.label + ' : ' + c.raw + '%' }
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{backgroundColor:'#222',borderColor:'rgba(255,255,255,0.1)',borderWidth:1,mode:'index',intersect:false,
+      callbacks:{label:c=>' '+c.dataset.label+' : '+c.raw+'%'}
     }},
-    scales: {
-      x: { ticks: { color: tickColor, font: { size: 11 } }, grid: { display: false }, border: { display: false } },
-      y: { min: 0, max: 65, ticks: { color: tickColor, font: { size: 11 }, callback: v => v + '%' }, grid: { color: gridColor }, border: { display: false } }
+    scales:{
+      x:{ticks:{color:tc,font:{size:11}},grid:{display:false},border:{display:false}},
+      y:{min:0,max:65,ticks:{color:tc,font:{size:11},callback:v=>v+'%'},grid:{color:gc},border:{display:false}}
     }
   }
 });
 
-// Sexe chart
-new Chart(document.getElementById('chartSexe'), {
-  type: 'bar',
-  data: {
-    labels: ['2024', '2025'],
-    datasets: [
-      { label: 'Hommes', data: [9959, 6864], backgroundColor: '#4a90d9', borderRadius: 3, borderSkipped: false, stack: 's' },
-      { label: 'Femmes', data: [1781, 1486], backgroundColor: '#c4547e', borderRadius: 3, borderSkipped: false, stack: 's' }
+// Sexe
+new Chart(document.getElementById('cSexe'),{
+  type:'bar',
+  data:{
+    labels:['2024','2025'],
+    datasets:[
+      {label:'Hommes',data:[10411,9082],backgroundColor:'#4a90d9',borderRadius:3,borderSkipped:false,stack:'s'},
+      {label:'Femmes',data:[1764,2075],backgroundColor:'#c4547e',borderRadius:3,borderSkipped:false,stack:'s'}
     ]
   },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false }, tooltip: {
-      backgroundColor: '#222', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, mode: 'index', intersect: false,
-      callbacks: {
-        label: c => {
-          const tot = c.datasetIndex === 0 ? (c.dataIndex === 0 ? 11740 : 8350) : (c.dataIndex === 0 ? 11740 : 8350);
-          const pct = Math.round(c.raw / tot * 100);
-          return ' ' + c.dataset.label + ' : ' + c.raw.toLocaleString('fr-FR') + ' (' + pct + '%)';
-        }
-      }
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{backgroundColor:'#222',borderColor:'rgba(255,255,255,0.1)',borderWidth:1,mode:'index',intersect:false,
+      callbacks:{label:c=>{const t=c.dataIndex===0?12175:11157;return ' '+c.dataset.label+' : '+c.raw.toLocaleString('fr-FR')+' ('+Math.round(c.raw/t*100)+'%)'}}
     }},
-    scales: {
-      x: { stacked: true, ticks: { color: tickColor, font: { size: 13, weight: '500' } }, grid: { display: false }, border: { display: false } },
-      y: { stacked: true, ticks: { color: tickColor, font: { size: 11 }, callback: v => v.toLocaleString('fr-FR') }, grid: { color: gridColor }, border: { display: false } }
+    scales:{
+      x:{stacked:true,ticks:{color:tc,font:{size:13,weight:'500'}},grid:{display:false},border:{display:false}},
+      y:{stacked:true,ticks:{color:tc,font:{size:11},callback:v=>v.toLocaleString('fr-FR')},grid:{color:gc},border:{display:false}}
     }
   }
 });
