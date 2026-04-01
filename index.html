@@ -39,7 +39,12 @@
   .info-box{margin-top:12px;padding:10px 14px;background:rgba(61,184,138,0.1);border-radius:8px;border:1px solid rgba(61,184,138,0.2);font-size:12px;color:var(--teal);}
   .note-box{padding:8px 12px;background:rgba(232,184,75,0.07);border-radius:6px;border:1px solid rgba(232,184,75,0.18);font-size:11px;color:rgba(232,184,75,0.8);margin-bottom:14px;line-height:1.5;}
   footer{padding:20px 48px;border-top:1px solid var(--border);color:var(--hint);font-size:11px;}
-  @media(max-width:900px){main{padding:16px;}.kpis{grid-template-columns:1fr 1fr;}.row2,.row3{grid-template-columns:1fr;}header{padding:24px 16px;}}
+  .sel{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:12px;font-weight:500;padding:7px 32px 7px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='rgba(240,237,232,0.45)' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;min-width:180px;}
+  .sel:focus{outline:none;border-color:rgba(255,255,255,0.25);}
+  .sel-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:5px;}
+  .kpi-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+  .periode-empty{color:var(--muted);font-size:12px;grid-column:1/-1;padding:12px 0;}
+  @media(max-width:900px){main{padding:16px;}.kpis{grid-template-columns:1fr 1fr;}.row2,.row3{grid-template-columns:1fr;}header{padding:24px 16px;}.kpi-grid{grid-template-columns:1fr 1fr;}}
 </style>
 </head>
 <body>
@@ -139,6 +144,38 @@
       <div class="chart-wrap h260"><canvas id="cSexe"></canvas></div>
       <div class="info-box">Féminisation en hausse : 15 % → 18 % entre 2024 et 2025</div>
     </div>
+  </div>
+
+  <!-- Analyse par période -->
+  <div class="card">
+    <p class="card-title">Analyse par épreuve &amp; période</p>
+    <p class="card-sub">Statistiques détaillées sur une fenêtre temporelle · 2020–2022 exclues (COVID / données indisponibles)</p>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px;align-items:flex-end;">
+      <div>
+        <p class="sel-label">Type d'épreuve</p>
+        <select id="selType" class="sel">
+          <option value="total">Total participants</option>
+          <option value="j1">1 Jour (cyclosportif + cyclotouriste)</option>
+          <option value="j2">2 Jours</option>
+          <option value="j3">3 Jours</option>
+          <option value="j4">4 Jours</option>
+          <option value="av">Ardèche Verte</option>
+          <option value="jeunes">Ardéchoise des Jeunes</option>
+        </select>
+      </div>
+      <div>
+        <p class="sel-label">Période</p>
+        <select id="selPeriod" class="sel" style="min-width:160px;">
+          <option value="1">1 an (2024–2025)</option>
+          <option value="3">3 ans (2023–2025)</option>
+          <option value="5" selected>5 ans (2019–2025)</option>
+          <option value="10">10 ans (2015–2025)</option>
+        </select>
+      </div>
+    </div>
+    <div id="periodeKpis" class="kpi-grid" style="margin-bottom:20px;"></div>
+    <div id="periodeChartWrap" class="chart-wrap h280"><canvas id="cPeriode"></canvas></div>
+    <div id="periodeNote" style="margin-top:8px;font-size:10px;color:var(--hint);line-height:1.5;"></div>
   </div>
 
 </main>
@@ -300,6 +337,170 @@ new Chart(document.getElementById('cSexe'),{
     }
   }
 });
+
+// ── ANALYSE PAR PÉRIODE ──────────────────────────────────────────────────────
+const PT={
+  total: {label:'Total participants',              color:'#e8b84b'},
+  j1:    {label:'1 Jour (cyclosportif+cyclotouriste)',color:'#7c6fcd'},
+  j2:    {label:'2 Jours',                          color:'#4a90d9'},
+  j3:    {label:'3 Jours',                          color:'#9b59b6'},
+  j4:    {label:'4 Jours',                          color:'#2980b9'},
+  av:    {label:'Ardèche Verte',                    color:'#3db88a'},
+  jeunes:{label:'Ardéchoise des Jeunes',            color:'#e06b4a'},
+};
+const PD={'1':2024,'3':2023,'5':2019,'10':2015};
+let pchart=null;
+
+function getPairs(type,period){
+  const sy=PD[period];
+  return YEARS.map((y,i)=>({year:y,val:DATA[type][i]}))
+    .filter(p=>p.year>=sy && p.val!==null && p.val!==undefined);
+}
+
+function periodeStats(pairs){
+  const vals=pairs.map(p=>p.val), yrs=pairs.map(p=>p.year), n=vals.length;
+  const mean=Math.round(vals.reduce((a,b)=>a+b,0)/n);
+  const max=Math.max(...vals), maxY=yrs[vals.indexOf(max)];
+  const min=Math.min(...vals), minY=yrs[vals.indexOf(min)];
+  const evo=(vals[n-1]-vals[0])/vals[0]*100;
+  // régression linéaire
+  const xi=vals.map((_,i)=>i);
+  const mx=xi.reduce((a,b)=>a+b,0)/n, my=mean;
+  const num=xi.reduce((s,x,i)=>s+(x-mx)*(vals[i]-my),0);
+  const den=xi.reduce((s,x)=>s+(x-mx)**2,0);
+  const slope=den?num/den:0;
+  const trendLine=xi.map(x=>Math.round((my-slope*mx)+slope*x));
+  const trendDir=slope>80?'hausse':slope<-80?'baisse':'stable';
+  // meilleure/pire variation YoY
+  let bestYoY=null,worstYoY=null;
+  for(let i=1;i<n;i++){
+    const d=vals[i]-vals[i-1], p=d/vals[i-1]*100;
+    if(!bestYoY||d>bestYoY.d)  bestYoY ={year:yrs[i],d,p};
+    if(!worstYoY||d<worstYoY.d)worstYoY={year:yrs[i],d,p};
+  }
+  // volatilité (coeff. de variation)
+  const stddev=Math.sqrt(vals.reduce((s,v)=>s+(v-mean)**2,0)/n);
+  const cv=Math.round(stddev/mean*100);
+  return{mean,max,maxY,min,minY,evo,slope,trendLine,trendDir,bestYoY,worstYoY,cv};
+}
+
+function kpiBox(borderColor,label,value,sub){
+  return`<div class="kpi" style="border-left:3px solid ${borderColor}">
+    <p class="kpi-label">${label}</p>
+    <p class="kpi-value" style="font-size:22px;line-height:1.1">${value}</p>
+    <p class="kpi-sub">${sub}</p>
+  </div>`;
+}
+
+function renderPeriode(){
+  const type=document.getElementById('selType').value;
+  const period=document.getElementById('selPeriod').value;
+  const pairs=getPairs(type,period);
+  const kEl=document.getElementById('periodeKpis');
+  const wEl=document.getElementById('periodeChartWrap');
+  const nEl=document.getElementById('periodeNote');
+  if(pchart){pchart.destroy();pchart=null;}
+
+  if(pairs.length<2){
+    kEl.innerHTML=`<p class="periode-empty">${pairs.length===0
+      ?'Aucune donnée disponible pour cette épreuve sur cette période.'
+      :'Donnée disponible pour 1 seule édition — évolution non calculable.'}</p>`;
+    wEl.style.display='none'; nEl.textContent=''; return;
+  }
+  wEl.style.display='';
+  const tConf=PT[type], s=periodeStats(pairs);
+  const evoSign=s.evo>=0?'+':'';
+  const evoColor=s.evo>=0?'var(--teal)':'var(--coral)';
+  const tIcon=s.trendDir==='hausse'?'↗':s.trendDir==='baisse'?'↘':'→';
+  const tColor=s.trendDir==='hausse'?'var(--teal)':s.trendDir==='baisse'?'var(--coral)':'var(--muted)';
+  const last=pairs[pairs.length-1], first=pairs[0];
+  const cvColor=s.cv<10?'var(--teal)':s.cv<20?'var(--jaune)':'var(--coral)';
+
+  let html='';
+  html+=kpiBox(tConf.color,'Participants moyens',
+    s.mean.toLocaleString('fr-FR'),
+    `${pairs.length} édition${pairs.length>1?'s':''} · ${first.year}–${last.year}`);
+  html+=kpiBox(evoColor,'Évolution globale',
+    `<span style="color:${evoColor}">${evoSign}${s.evo.toFixed(1)} %</span>`,
+    `${first.year} (${first.val.toLocaleString('fr-FR')}) → ${last.year} (${last.val.toLocaleString('fr-FR')})`);
+  html+=kpiBox('var(--jaune)','Record de la période',
+    s.max.toLocaleString('fr-FR'),`Année ${s.maxY}`);
+  html+=kpiBox('var(--violet)','Minimum de la période',
+    s.min.toLocaleString('fr-FR'),`Année ${s.minY}`);
+  html+=kpiBox(tColor,'Tendance linéaire',
+    `<span style="color:${tColor}">${tIcon} ${s.trendDir.charAt(0).toUpperCase()+s.trendDir.slice(1)}</span>`,
+    `Pente : ${s.slope>=0?'+':''}${Math.round(s.slope).toLocaleString('fr-FR')} participants/an`);
+  html+=kpiBox(cvColor,'Volatilité',
+    `<span style="color:${cvColor}">${s.cv} %</span>`,
+    `Coeff. de variation · ${s.cv<10?'très stable':s.cv<20?'modérée':'élevée'}`);
+  if(pairs.length>=3 && s.bestYoY){
+    html+=kpiBox('var(--teal)','Meilleure progression',
+      `<span style="color:var(--teal)">+${Math.round(s.bestYoY.d).toLocaleString('fr-FR')}</span>`,
+      `En ${s.bestYoY.year} · +${s.bestYoY.p.toFixed(1)} %`);
+  }
+  if(pairs.length>=3 && s.worstYoY && s.worstYoY.d<0){
+    html+=kpiBox('var(--coral)','Plus forte baisse',
+      `<span style="color:var(--coral)">${Math.round(s.worstYoY.d).toLocaleString('fr-FR')}</span>`,
+      `En ${s.worstYoY.year} · ${s.worstYoY.p.toFixed(1)} %`);
+  }
+  kEl.innerHTML=html;
+
+  // note lacunes
+  const hasGap=pairs.some((p,i)=>i>0&&p.year-pairs[i-1].year>1);
+  nEl.textContent=hasGap
+    ?' Série discontinue (2020–2022 annulées / données indisponibles). La tendance est calculée sur les éditions disponibles uniquement.'
+    :'';
+
+  // graphique
+  pchart=new Chart(document.getElementById('cPeriode'),{
+    type:'line',
+    data:{
+      labels:pairs.map(p=>p.year),
+      datasets:[
+        {
+          label:tConf.label,
+          data:pairs.map(p=>p.val),
+          borderColor:tConf.color,
+          backgroundColor:tConf.color+'18',
+          tension:0.35,fill:true,borderWidth:2.5,
+          pointRadius:pairs.map(p=>p.val===s.max?7:4),
+          pointBackgroundColor:pairs.map(p=>p.val===s.max?'#e8b84b':tConf.color),
+          pointBorderColor:pairs.map(p=>p.val===s.max?'rgba(232,184,75,0.6)':'transparent'),
+          pointBorderWidth:pairs.map(p=>p.val===s.max?2:0),
+          pointHoverRadius:6,
+        },
+        {
+          label:'Tendance',
+          data:s.trendLine,
+          borderColor:'rgba(255,255,255,0.2)',
+          borderWidth:1.5,
+          borderDash:[5,4],
+          fill:false,pointRadius:0,tension:0,
+        }
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:true,labels:{color:'rgba(255,255,255,0.4)',font:{size:11},boxWidth:10,padding:14}},
+        tooltip:{backgroundColor:'#222',borderColor:'rgba(255,255,255,0.1)',borderWidth:1,
+          callbacks:{label:c=>c.datasetIndex===0
+            ?' '+c.raw.toLocaleString('fr-FR')+' participants'
+            :' Tendance : '+c.raw.toLocaleString('fr-FR')}
+        }
+      },
+      scales:{
+        x:{ticks:{color:tc,font:{size:12}},grid:{color:gc},border:{display:false}},
+        y:{beginAtZero:false,ticks:{color:tc,font:{size:11},callback:v=>v>=1000?(v/1000).toFixed(1)+'k':v},grid:{color:gc},border:{display:false}}
+      }
+    }
+  });
+}
+
+document.getElementById('selType').addEventListener('change',renderPeriode);
+document.getElementById('selPeriod').addEventListener('change',renderPeriode);
+renderPeriode();
 </script>
 </body>
 </html>
