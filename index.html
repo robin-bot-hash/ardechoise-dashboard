@@ -100,8 +100,8 @@
     </div>
   </div>
 
-  <!-- Répartition + VAE -->
-  <div class="row2">
+  <!-- Répartition + VAE + Ultra -->
+  <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:20px;">
     <div class="card">
       <p class="card-title">Répartition par type d'épreuve</p>
       <p class="card-sub">Volumes annuels empilés · Wikipedia (2010–2019) + raceresult (2023–2025)</p>
@@ -123,6 +123,12 @@
       <p class="card-sub">Épreuves cyclotouristes · 2024 vs 2025 · source raceresult.com</p>
       <div class="chart-wrap h260"><canvas id="cVAE"></canvas></div>
       <div class="info-box">Taux de pénétration VAE parmi les 50–64 ans : ~9 % en 2024 → ~14 % en 2025. Potentiel non capté : 3 779 participants.</div>
+    </div>
+    <div class="card">
+      <p class="card-title">Ultra / Vélo Marathon</p>
+      <p class="card-sub">Finishers · 2023–2025 · source raceresult.com</p>
+      <div class="chart-wrap h260"><canvas id="cUltra"></canvas></div>
+      <div class="info-box" style="background:rgba(224,107,74,0.1);border-color:rgba(224,107,74,0.25);color:var(--coral);">2023 : épreuve «&nbsp;Ultra&nbsp;» · 2024–2025 : «&nbsp;Vélo Marathon&nbsp;» · +219 % sur 3 ans</div>
     </div>
   </div>
 
@@ -296,6 +302,26 @@ new Chart(document.getElementById('cVAE'),{
     scales:{
       x:{stacked:true,ticks:{color:tc,font:{size:13,weight:'500'}},grid:{display:false},border:{display:false}},
       y:{stacked:true,ticks:{color:tc,font:{size:11},callback:v=>v.toLocaleString('fr-FR')},grid:{color:gc},border:{display:false}}
+    }
+  }
+});
+
+// Ultra / Vélo Marathon
+new Chart(document.getElementById('cUltra'),{
+  type:'bar',plugins:[lblP],
+  data:{labels:['2023','2024','2025'],datasets:[
+    {label:'Ultra / Vélo Marathon',data:[26,65,83],
+     backgroundColor:['#e06b4a','#e06b4a','#e06b4a'],
+     borderRadius:4,borderSkipped:false,showLbl:true,lblC:'#fff',lblCout:'#e06b4a'},
+  ]},
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{backgroundColor:'#222',borderColor:'rgba(255,255,255,0.1)',borderWidth:1,
+      callbacks:{label:c=>' '+c.raw+' finishers'}
+    }},
+    scales:{
+      x:{ticks:{color:tc,font:{size:13,weight:'500'}},grid:{display:false},border:{display:false}},
+      y:{min:0,ticks:{color:tc,font:{size:11},callback:v=>v},grid:{color:gc},border:{display:false}}
     }
   }
 });
