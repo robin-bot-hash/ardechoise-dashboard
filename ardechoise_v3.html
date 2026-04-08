@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L'Ardéchoise 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --v:#4B3F8C;--vl:#6B5FBF;--vd:#2d2460;
+  --j:#E8C93A;--jl:#F5E07A;--jd:#B89A1A;
+  --blanc:#FAFAF5;--noir:#1A1A18;--gris:#F0EFE8;
+  --vert:#3D6B4F;--trail:#C8501A;
+  --surface:#221E3A;--surface2:#2d2850;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'DM Sans',sans-serif;background:var(--vd);color:#fff;display:flex;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:200px;flex-shrink:0;
+  background:var(--vd);
+  border-right:1px solid rgba(255,255,255,.08);
+  display:flex;flex-direction:column;
+  height:100vh;overflow:hidden;
+  position:relative;z-index:50;
+}
+.sidebar::after{
+  content:'';position:absolute;top:0;right:0;width:1px;height:100%;
+  background:linear-gradient(to bottom,transparent,rgba(232,201,58,.3),transparent);
+}
+.sb-logo{
+  padding:24px 20px 20px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.sb-logo-text{
+  font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--j);
+  letter-spacing:.06em;line-height:1;text-decoration:none;display:block;
+}
+.sb-logo-sub{font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-top:3px;}
+.sb-nav{flex:1;padding:12px 0;overflow-y:auto;}
+.sb-nav::-webkit-scrollbar{display:none;}
+.sb-item{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 20px;cursor:pointer;
+  transition:background .18s;position:relative;
+  text-decoration:none;border:none;background:none;width:100%;text-align:left;
+}
+.sb-item::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--j);opacity:0;transition:opacity .18s;border-radius:0 2px 2px 0;
+}
+.sb-item:hover{background:rgba(255,255,255,.05);}
+.sb-item.active{background:rgba(232,201,58,.1);}
+.sb-item.active::before{opacity:1;}
+.sb-icon{
+  width:32px;height:32px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  background:rgba(255,255,255,.06);transition:background .18s;
+}
+.sb-item.active .sb-icon{background:rgba(232,201,58,.18);}
+.sb-icon svg{width:15px;height:15px;stroke:rgba(255,255,255,.4);transition:stroke .18s;}
+.sb-item.active .sb-icon svg,.sb-item:hover .sb-icon svg{stroke:var(--j);}
+.sb-label{font-size:12px;color:rgba(255,255,255,.5);font-weight:400;transition:color .18s;line-height:1.2;}
+.sb-item.active .sb-label,.sb-item:hover .sb-label{color:#fff;}
+.sb-trail .sb-icon svg{stroke:rgba(200,80,26,.6);}
+.sb-trail.active .sb-icon svg,.sb-trail:hover .sb-icon svg{stroke:var(--trail);}
+.sb-trail.active .sb-icon{background:rgba(200,80,26,.15);}
+.sb-trail.active::before,.sb-trail:hover::after{background:var(--trail);}
+.sb-trail.active::before{background:var(--trail);}
+.sb-sep{height:1px;background:rgba(255,255,255,.06);margin:6px 16px;}
+.sb-section-label{font-size:9px;color:rgba(255,255,255,.2);letter-spacing:.12em;text-transform:uppercase;padding:10px 20px 4px;font-weight:500;}
+.sb-bottom{padding:16px 20px;border-top:1px solid rgba(255,255,255,.07);}
+.sb-cta{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--j);color:var(--noir);
+  font-weight:500;font-size:11px;padding:10px 16px;
+  text-decoration:none;border-radius:4px;
+  letter-spacing:.05em;text-transform:uppercase;transition:background .2s;width:100%;
+}
+.sb-cta:hover{background:var(--jl);}
+
+/* ── MAIN ── */
+.main{flex:1;height:100vh;overflow:hidden;position:relative;}
+.pages-container{
+  display:flex;height:100%;
+  transition:transform .55s cubic-bezier(.77,0,.175,1);
+  will-change:transform;
+}
+.page{
+  min-width:100%;height:100%;overflow-y:auto;
+  scroll-behavior:smooth;
+}
+.page::-webkit-scrollbar{width:4px;}
+.page::-webkit-scrollbar-track{background:transparent;}
+.page::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px;}
+
+/* ── HERO PAGE ── */
+.hero-page{
+  background:linear-gradient(160deg,var(--vd) 0%,#1a3a2a 55%,#1a1a18 100%);
+  display:grid;grid-template-rows:1fr auto;min-height:100%;
+}
+.hero-main{
+  display:flex;flex-direction:column;justify-content:center;
+  padding:80px 64px 40px;position:relative;overflow:hidden;
+}
+.hero-topo{
+  position:absolute;right:-60px;top:-80px;width:600px;height:600px;opacity:.1;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cellipse cx='300' cy='300' rx='280' ry='160' fill='none' stroke='%23E8C93A' stroke-width='1'/%3E%3Cellipse cx='300' cy='300' rx='220' ry='124' fill='none' stroke='%23E8C93A' stroke-width='1'/%3E%3Cellipse cx='300' cy='300' rx='160' ry='88' fill='none' stroke='%23E8C93A' stroke-width='1'/%3E%3Cellipse cx='300' cy='300' rx='100' ry='52' fill='none' stroke='%23E8C93A' stroke-width='1'/%3E%3Cellipse cx='300' cy='300' rx='48' ry='22' fill='none' stroke='%23E8C93A' stroke-width='1'/%3E%3C/svg%3E");
+  animation:topoF 20s ease-in-out infinite;
+}
+@keyframes topoF{0%,100%{transform:scale(1) rotate(0);}50%{transform:scale(1.04) rotate(1deg);}}
+.hero-eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+.ey-line{width:28px;height:2px;background:var(--j);}
+.ey-text{font-size:11px;color:var(--j);letter-spacing:.15em;text-transform:uppercase;font-weight:500;}
+.hero-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(64px,8vw,120px);
+  line-height:.9;letter-spacing:.02em;
+}
+.hero-title em{font-style:normal;color:var(--j);}
+.hero-sub{
+  font-family:'Lora',serif;font-size:clamp(15px,1.6vw,19px);
+  color:rgba(255,255,255,.7);font-style:italic;
+  max-width:480px;line-height:1.7;margin-top:22px;
+}
+.hero-btns{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap;}
+.btn-p{display:inline-flex;align-items:center;gap:8px;background:var(--j);color:var(--noir);font-weight:500;font-size:12px;padding:13px 26px;text-decoration:none;border-radius:3px;letter-spacing:.05em;text-transform:uppercase;transition:background .2s;}
+.btn-p:hover{background:var(--jl);}
+.btn-s{display:inline-flex;align-items:center;gap:8px;border:1.5px solid rgba(255,255,255,.25);color:rgba(255,255,255,.85);font-size:12px;padding:13px 26px;text-decoration:none;border-radius:3px;letter-spacing:.05em;text-transform:uppercase;transition:border-color .2s,color .2s;cursor:pointer;background:none;}
+.btn-s:hover{border-color:var(--j);color:var(--j);}
+.hero-stats{
+  display:grid;grid-template-columns:repeat(5,1fr);
+  background:rgba(232,201,58,.92);
+}
+.hs{padding:18px 16px;border-right:1px solid rgba(26,26,24,.12);text-align:center;}
+.hs:last-child{border-right:none;}
+.hs-v{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--noir);line-height:1;}
+.hs-l{font-size:9px;color:rgba(26,26,24,.55);text-transform:uppercase;letter-spacing:.08em;margin-top:2px;}
+
+/* ── HISTOIRE PAGE ── */
+.histoire-page{background:var(--blanc);color:var(--noir);}
+.hist-hero{
+  background:linear-gradient(135deg,var(--vd),var(--v));
+  padding:64px;position:relative;overflow:hidden;
+}
+.hist-hero-topo{position:absolute;right:-40px;bottom:-40px;width:400px;height:400px;opacity:.08;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cellipse cx='200' cy='200' rx='190' ry='110' fill='none' stroke='%23E8C93A' stroke-width='1.5'/%3E%3Cellipse cx='200' cy='200' rx='140' ry='80' fill='none' stroke='%23E8C93A' stroke-width='1.5'/%3E%3Cellipse cx='200' cy='200' rx='90' ry='50' fill='none' stroke='%23E8C93A' stroke-width='1.5'/%3E%3C/svg%3E");}
+.hist-tag{font-size:11px;color:var(--j);letter-spacing:.15em;text-transform:uppercase;font-weight:500;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.hist-tag::before{content:'';width:24px;height:2px;background:var(--j);}
+.hist-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(44px,5vw,68px);color:#fff;line-height:1;letter-spacing:.02em;}
+.hist-title em{color:var(--j);font-style:normal;}
+.hist-lead{font-family:'Lora',serif;font-size:18px;color:rgba(255,255,255,.75);font-style:italic;max-width:560px;line-height:1.75;margin-top:18px;}
+.hist-body{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.hist-left{padding:56px 64px;background:var(--blanc);}
+.hist-right{padding:56px 48px;background:var(--gris);}
+.hist-section-title{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--v);letter-spacing:.03em;margin-bottom:18px;}
+.hist-text{font-size:15px;color:rgba(26,26,24,.72);line-height:1.78;margin-bottom:16px;}
+.timeline{display:flex;flex-direction:column;gap:0;}
+.tl-item{display:flex;gap:20px;padding-bottom:24px;position:relative;}
+.tl-item:last-child{padding-bottom:0;}
+.tl-item::before{content:'';position:absolute;left:19px;top:32px;bottom:0;width:1px;background:rgba(75,63,140,.2);}
+.tl-item:last-child::before{display:none;}
+.tl-year{font-family:'Bebas Neue',sans-serif;font-size:13px;color:#fff;background:var(--v);padding:5px 10px;border-radius:3px;height:fit-content;flex-shrink:0;min-width:52px;text-align:center;line-height:1.2;margin-top:2px;}
+.tl-year.gold{background:var(--j);color:var(--noir);}
+.tl-content{}
+.tl-title{font-size:14px;font-weight:500;color:var(--noir);margin-bottom:3px;}
+.tl-desc{font-size:13px;color:rgba(26,26,24,.58);line-height:1.55;}
+.value-cards{display:flex;flex-direction:column;gap:14px;}
+.val-card{background:#fff;border:1px solid rgba(75,63,140,.1);border-radius:6px;padding:18px;display:flex;gap:14px;align-items:flex-start;}
+.val-icon{font-size:24px;flex-shrink:0;}
+.val-title{font-size:14px;font-weight:500;color:var(--noir);}
+.val-desc{font-size:13px;color:rgba(26,26,24,.58);line-height:1.55;margin-top:3px;}
+.hist-quote{
+  background:linear-gradient(135deg,var(--v),var(--vl));
+  padding:48px 64px;text-align:center;
+}
+.hq-text{font-family:'Lora',serif;font-size:clamp(18px,2vw,24px);color:#fff;font-style:italic;line-height:1.7;max-width:700px;margin:0 auto;}
+.hq-text::before{content:'"';font-family:'Bebas Neue',sans-serif;font-size:80px;color:var(--j);line-height:.6;display:block;margin-bottom:12px;}
+.hq-source{font-size:13px;color:rgba(255,255,255,.5);margin-top:16px;letter-spacing:.05em;}
+
+/* ── ÉPREUVES PAGE ── */
+.ep-page{background:var(--surface);}
+.page-header{padding:48px 64px 0;}
+.page-tag{font-size:11px;font-weight:500;color:var(--j);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+.page-tag::before{content:'';width:24px;height:2px;background:var(--j);}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,5vw,62px);line-height:1;letter-spacing:.02em;color:#fff;}
+.page-title em{font-style:normal;color:var(--j);}
+.ep-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:28px 64px 48px;}
+.ep{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:6px;padding:26px 22px;cursor:pointer;transition:border-color .22s,background .22s,transform .18s;display:flex;flex-direction:column;}
+.ep:hover{border-color:rgba(255,255,255,.2);transform:translateY(-3px);}
+.ep.feat{border-color:var(--j);background:rgba(232,201,58,.07);}
+.ep.ep-trail{border-color:rgba(200,80,26,.3);background:rgba(200,80,26,.05);}
+.ep.ep-trail:hover{border-color:var(--trail);}
+.ep-badge{display:inline-block;font-size:9px;font-weight:500;padding:3px 8px;border-radius:2px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;width:fit-content;}
+.ep-badge.perf{background:var(--j);color:var(--noir);}
+.ep-badge.cyclo{background:rgba(107,95,191,.3);color:#9B8FE8;}
+.ep-badge.trail{background:rgba(200,80,26,.25);color:var(--trail);}
+.ep-badge.vae{background:rgba(61,107,79,.28);color:#7BC99A;}
+.ep-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;letter-spacing:.03em;}
+.ep-dist{font-family:'Bebas Neue',sans-serif;font-size:40px;line-height:1;color:var(--j);margin-top:2px;}
+.ep.ep-trail .ep-dist{color:var(--trail);}
+.ep-desc{font-size:12px;color:rgba(255,255,255,.45);line-height:1.55;margin-top:8px;}
+.ep-details{display:flex;gap:14px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07);}
+.ep-det strong{color:rgba(255,255,255,.7);font-weight:500;display:block;font-size:12px;}
+.ep-det span{font-size:10px;color:rgba(255,255,255,.3);}
+.ep-arrow{margin-top:auto;padding-top:12px;font-size:11px;color:rgba(255,255,255,.25);display:flex;align-items:center;gap:5px;transition:color .2s;}
+.ep:hover .ep-arrow{color:var(--j);}
+.ep.ep-trail:hover .ep-arrow{color:var(--trail);}
+
+/* ── ARDÉCHOISE PHARE ── */
+.phare-page{background:var(--surface);}
+.phare-hero{
+  background:linear-gradient(to right,rgba(26,24,42,1) 40%,rgba(26,24,42,.3)),
+             linear-gradient(135deg,var(--vd),var(--v));
+  padding:60px 64px;position:relative;overflow:hidden;
+}
+.phare-bg-topo{position:absolute;right:-80px;top:-80px;width:500px;height:500px;opacity:.12;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cellipse cx='250' cy='250' rx='230' ry='130' fill='none' stroke='%23E8C93A' stroke-width='1.5'/%3E%3Cellipse cx='250' cy='250' rx='170' ry='96' fill='none' stroke='%23E8C93A' stroke-width='1.5'/%3E%3Cellipse cx='250' cy='250' rx='110' ry='62' fill='none' stroke='%23E8C93A' stroke-width='1.5'/%3E%3C/svg%3E");}
+.phare-pretitle{font-size:11px;color:var(--j);letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.phare-pretitle::before{content:'';width:24px;height:2px;background:var(--j);}
+.phare-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,7vw,88px);line-height:.92;letter-spacing:.02em;}
+.phare-title em{color:var(--j);font-style:normal;}
+.phare-sub{font-family:'Lora',serif;font-size:16px;color:rgba(255,255,255,.65);font-style:italic;max-width:440px;line-height:1.7;margin-top:18px;}
+.phare-kpis{display:flex;gap:0;margin-top:24px;}
+.pk{padding:10px 24px 10px 0;border-right:1px solid rgba(255,255,255,.1);margin-right:24px;}
+.pk:last-child{border-right:none;}
+.pk-v{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--j);line-height:1;}
+.pk-l{font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.08em;margin-top:2px;}
+.phare-body{display:grid;grid-template-columns:1.2fr 1fr;gap:40px;padding:36px 64px 48px;}
+.elev-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:6px;padding:22px;}
+.elev-lbl{font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;}
+.elev-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.07);margin-top:14px;border-radius:3px;overflow:hidden;}
+.es{background:rgba(255,255,255,.04);padding:12px;text-align:center;}
+.es-v{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--j);line-height:1;}
+.es-l{font-size:9px;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.08em;margin-top:2px;}
+.elev-cols-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+.elev-col-tag{font-size:11px;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:5px;}
+.ec-dot{width:5px;height:5px;border-radius:50%;background:var(--j);}
+.cols-list{display:flex;flex-direction:column;gap:8px;}
+.col-i{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:4px;transition:border-color .2s;}
+.col-i:hover{border-color:var(--j);}
+.col-name{font-size:13px;color:#fff;font-weight:500;}
+.col-sub{font-size:10px;color:rgba(255,255,255,.3);margin-top:2px;}
+.col-alt{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--j);}
+.col-alt-l{font-size:9px;color:rgba(255,255,255,.3);}
+.chrono-box{background:rgba(232,201,58,.08);border:1px solid rgba(232,201,58,.2);border-radius:4px;padding:14px;margin-top:10px;display:flex;gap:10px;align-items:center;}
+.chrono-txt{font-size:12px;color:rgba(255,255,255,.7);line-height:1.45;}
+.chrono-txt strong{color:var(--j);}
+
+/* ── CHALLENGES ── */
+.chall-page{background:var(--noir);}
+.chall-grid-inner{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:28px 64px 48px;}
+.cc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:6px;overflow:hidden;transition:border-color .22s,transform .18s;}
+.cc:hover{transform:translateY(-3px);}
+.cc.c1:hover{border-color:var(--j);}
+.cc.c2:hover{border-color:#FC4C02;}
+.cc.c3:hover{border-color:var(--vl);}
+.cc-top{padding:26px 22px 18px;position:relative;}
+.cc-ico{font-size:38px;margin-bottom:12px;display:block;}
+.cc-bg{font-family:'Bebas Neue',sans-serif;font-size:90px;color:rgba(255,255,255,.04);position:absolute;top:8px;right:14px;line-height:1;pointer-events:none;}
+.cc-name{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#fff;letter-spacing:.02em;line-height:1.1;}
+.cc-name em{font-style:normal;color:var(--j);}
+.cc.c2 .cc-name em{color:#FC4C02;}
+.cc.c3 .cc-name em{color:#9B8FE8;}
+.cc-desc{font-size:12px;color:rgba(255,255,255,.5);line-height:1.65;margin-top:10px;}
+.cc-bot{padding:12px 22px 18px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:5px;flex-wrap:wrap;}
+.cc-tag{font-size:9px;font-weight:500;padding:3px 7px;border-radius:2px;text-transform:uppercase;letter-spacing:.08em;}
+.cc-tag.y{background:rgba(232,201,58,.15);color:var(--j);}
+.cc-tag.o{background:rgba(252,76,2,.15);color:#FC4C02;}
+.cc-tag.p{background:rgba(107,95,191,.2);color:#9B8FE8;}
+
+/* ── TRAIL PAGE ── */
+.trail-page{background:var(--noir);}
+.trail-hero-s{background:linear-gradient(to right,rgba(26,26,24,.98) 45%,rgba(26,26,24,.4)),linear-gradient(135deg,#3a1a08,#1a1a18);padding:56px 64px;position:relative;overflow:hidden;}
+.trail-diag{position:absolute;inset:0;opacity:.07;background:repeating-linear-gradient(45deg,transparent,transparent 28px,rgba(200,80,26,.2) 28px,rgba(200,80,26,.2) 29px);}
+.trail-pretitle{font-size:11px;color:var(--trail);letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.trail-pretitle::before{content:'';width:24px;height:2px;background:var(--trail);}
+.trail-main-t{font-family:'Bebas Neue',sans-serif;font-size:clamp(50px,6.5vw,84px);line-height:.92;letter-spacing:.02em;}
+.trail-main-t em{color:var(--trail);font-style:normal;}
+.trail-date-pill{display:inline-flex;align-items:center;gap:7px;background:rgba(200,80,26,.15);border:1px solid rgba(200,80,26,.3);color:var(--trail);font-size:11px;font-weight:500;padding:5px 12px;border-radius:2px;letter-spacing:.06em;text-transform:uppercase;margin-top:14px;}
+.trail-body-s{display:grid;grid-template-columns:1fr 1fr;gap:40px;padding:36px 64px 48px;}
+.tf{display:flex;align-items:center;gap:18px;padding:16px 18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:4px;cursor:pointer;transition:border-color .2s;margin-bottom:10px;}
+.tf:hover{border-color:var(--trail);}
+.tf-dist{font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--trail);line-height:1;min-width:72px;}
+.tf-name{font-size:13px;color:#fff;font-weight:500;}
+.tf-sub{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;}
+.tf-dp{font-family:'Bebas Neue',sans-serif;font-size:18px;color:rgba(255,255,255,.4);margin-left:auto;}
+.ti-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:18px;margin-bottom:12px;}
+.ti-ico{font-size:26px;margin-bottom:8px;display:block;}
+.ti-title{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--trail);}
+.ti-body{font-size:12px;color:rgba(255,255,255,.5);line-height:1.6;margin-top:5px;}
+.btn-trail{display:inline-flex;align-items:center;gap:8px;background:var(--trail);color:#fff;font-weight:500;font-size:12px;padding:11px 20px;text-decoration:none;border-radius:3px;letter-spacing:.05em;text-transform:uppercase;}
+
+/* ── SALON ── */
+.salon-page{background:var(--blanc);color:var(--noir);}
+.salon-hero-s{background:linear-gradient(135deg,var(--v),var(--vd));padding:56px 64px;position:relative;overflow:hidden;}
+.salon-hero-s .hist-hero-topo{opacity:.1;}
+.salon-tag{font-size:11px;color:var(--j);letter-spacing:.15em;text-transform:uppercase;font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.salon-tag::before{content:'';width:24px;height:2px;background:var(--j);}
+.salon-title-h{font-family:'Bebas Neue',sans-serif;font-size:clamp(44px,5.5vw,72px);color:#fff;line-height:1;letter-spacing:.02em;}
+.salon-title-h em{color:var(--j);font-style:normal;}
+.salon-sub-h{font-family:'Lora',serif;font-size:16px;color:rgba(255,255,255,.7);font-style:italic;max-width:520px;line-height:1.7;margin-top:16px;}
+.salon-grid-s{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:32px 64px 32px;}
+.sc{background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:6px;overflow:hidden;transition:transform .2s,box-shadow .2s;}
+.sc:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(75,63,140,.1);}
+.sc-top{height:140px;display:flex;align-items:center;justify-content:center;font-size:48px;}
+.sc:nth-child(1) .sc-top{background:linear-gradient(135deg,#2d1f5e,#4B3F8C);}
+.sc:nth-child(2) .sc-top{background:linear-gradient(135deg,#3D6B4F,#2d5440);}
+.sc:nth-child(3) .sc-top{background:linear-gradient(135deg,#8C5E3F,#7a4f32);}
+.sc:nth-child(4) .sc-top{background:linear-gradient(135deg,#1a3a2a,#2d5440);}
+.sc:nth-child(5) .sc-top{background:linear-gradient(135deg,#3a1a08,#C8501A);}
+.sc:nth-child(6) .sc-top{background:linear-gradient(135deg,#1a1040,#4B3F8C);}
+.sc-body{padding:18px;}
+.sc-title{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--noir);letter-spacing:.03em;}
+.sc-desc{font-size:12px;color:rgba(26,26,24,.58);line-height:1.58;margin-top:5px;}
+.salon-banner-s{margin:0 64px 40px;background:var(--v);border-radius:6px;padding:24px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;}
+.sbs-title{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#fff;}
+.sbs-sub{font-size:13px;color:rgba(255,255,255,.55);margin-top:3px;}
+.btn-white{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--v);font-weight:500;font-size:11px;padding:10px 20px;text-decoration:none;border-radius:3px;letter-spacing:.05em;text-transform:uppercase;flex-shrink:0;}
+
+/* ── PROS ── */
+.pros-page{background:var(--surface);}
+.pros-grid-s{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:28px 64px 48px;}
+.pc{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:6px;padding:26px 22px;transition:transform .2s,border-color .2s;}
+.pc:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.18);}
+.pc-q{font-family:'Lora',serif;font-size:14px;font-style:italic;color:rgba(255,255,255,.72);line-height:1.75;margin-bottom:18px;}
+.pc-q::before{content:'"';font-family:'Bebas Neue',sans-serif;font-size:56px;color:var(--j);line-height:.6;display:block;margin-bottom:8px;}
+.pc-info{display:flex;align-items:center;gap:11px;}
+.pc-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;color:#fff;flex-shrink:0;}
+.pc-name{font-size:13px;font-weight:500;color:#fff;}
+.pc-role{font-size:10px;color:rgba(255,255,255,.38);margin-top:2px;}
+.pc-stars{color:var(--j);font-size:10px;letter-spacing:1px;margin-top:2px;}
+
+/* ── GPX ── */
+.gpx-page{background:linear-gradient(160deg,var(--vd) 0%,var(--v) 100%);}
+.gpx-body-s{display:grid;grid-template-columns:1fr 1fr;gap:40px;padding:32px 64px 48px;align-items:start;}
+.gpx-lead{font-family:'Lora',serif;font-size:15px;color:rgba(255,255,255,.7);font-style:italic;line-height:1.75;margin-bottom:22px;}
+.gpx-feats{display:flex;flex-direction:column;gap:10px;}
+.gf{display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,.08);border-radius:4px;}
+.gf-ico{font-size:18px;}
+.gf-txt{font-size:13px;color:rgba(255,255,255,.8);}
+.gf-txt strong{color:#fff;}
+.strava-btn{display:inline-flex;align-items:center;gap:8px;background:#FC4C02;color:#fff;font-weight:500;font-size:11px;padding:11px 18px;border-radius:3px;text-decoration:none;margin-top:18px;}
+.mock{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:22px;}
+.mock-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.mock-ht{font-family:'Bebas Neue',sans-serif;font-size:15px;color:#fff;}
+.mock-hb{background:var(--j);color:var(--noir);font-size:9px;font-weight:500;padding:3px 7px;border-radius:2px;text-transform:uppercase;}
+.mock-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px;}
+.ms{background:rgba(255,255,255,.07);border-radius:5px;padding:9px;text-align:center;}
+.ms-v{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--j);}
+.ms-l{font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;margin-top:1px;}
+.mock-prog{background:rgba(255,255,255,.07);border-radius:4px;padding:10px;margin-bottom:8px;}
+.mp-l{font-size:10px;color:rgba(255,255,255,.45);margin-bottom:5px;}
+.mp-row{display:flex;justify-content:space-between;margin-bottom:4px;}
+.mp-row span{font-size:9px;color:rgba(255,255,255,.35);}
+.mp-bar{height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;}
+.mp-fill{height:100%;border-radius:2px;}
+.mock-badges{display:flex;gap:6px;}
+.mb{background:rgba(232,201,58,.1);border:1px solid rgba(232,201,58,.18);border-radius:4px;padding:7px 9px;text-align:center;flex:1;}
+.mb-i{font-size:16px;}
+.mb-t{font-size:8px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:2px;}
+
+/* ── PAGE INDICATOR ── */
+.page-dots{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  display:flex;gap:5px;z-index:200;
+}
+.pd{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.2);cursor:pointer;transition:background .25s,width .25s;}
+.pd.active{background:var(--j);width:18px;border-radius:3px;}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <a class="sb-logo-text" onclick="goTo(0)">L'Ardéchoise</a>
+    <div class="sb-logo-sub">Saint-Félicien · Ardèche</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-item active" onclick="goTo(0)">
+      <div class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+      <span class="sb-label">Accueil</span>
+    </div>
+    <div class="sb-item" onclick="goTo(1)">
+      <div class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
+      <span class="sb-label">Notre histoire</span>
+    </div>
+    <div class="sb-sep"></div>
+    <div class="sb-section-label">Les épreuves</div>
+    <div class="sb-item" onclick="goTo(2)">
+      <div class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+      <span class="sb-label">Toutes les formules</span>
+    </div>
+    <div class="sb-item" onclick="goTo(3)">
+      <div class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+      <span class="sb-label">L'Ardéchoise 240km</span>
+    </div>
+    <div class="sb-item sb-trail" onclick="goTo(4)">
+      <div class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M3 17l6-6 4 4 8-10"/></svg></div>
+      <span class="sb-label">Trail · Sept. 2026</span>
+    </div>
+    <div class="sb-sep"></div>
+    <div class="sb-section-label">Vivre l'Ardéchoise</div>
+    <div class="sb-item" onclick="goTo(5)">
+      <div class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/></svg></div>
+      <span class="sb-label">Challenges 2026</span>
+    </div>
+    <div class="sb-item" onclick="goTo(6)">
+      <div class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg></div>
+      <span class="sb-label">Le Salon</span>
+    </div>
+    <div class="sb-item" onclick="goTo(7)">
+      <div class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+      <span class="sb-label">Ils témoignent</span>
+    </div>
+    <div class="sb-item" onclick="goTo(8)">
+      <div class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+      <span class="sb-label">GPX & Strava</span>
+    </div>
+  </nav>
+  <div class="sb-bottom">
+    <a href="#" class="sb-cta">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      S'inscrire 2026
+    </a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="pages-container" id="pages">
+
+    <!-- 0 · ACCUEIL -->
+    <div class="page hero-page">
+      <div class="hero-main">
+        <div class="hero-topo"></div>
+        <div style="position:relative;z-index:1">
+          <div class="hero-eyebrow"><div class="ey-line"></div><span class="ey-text">Saint-Félicien · Ardèche · Depuis 1992</span></div>
+          <h1 class="hero-title">L'Ardèche<br><em>à vélo.</em></h1>
+          <p class="hero-sub">Le plus grand rassemblement cycliste de montagne en Europe. Une fête du vélo, une aventure humaine, une terre qui marque à vie.</p>
+          <div class="hero-btns">
+            <a href="#" class="btn-p"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>S'inscrire 2026</a>
+            <button class="btn-s" onclick="goTo(2)">Voir les épreuves</button>
+          </div>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="hs"><div class="hs-v">33<sup style="font-size:13px">e</sup></div><div class="hs-l">édition 2026</div></div>
+        <div class="hs"><div class="hs-v">+11 000</div><div class="hs-l">cyclistes</div></div>
+        <div class="hs"><div class="hs-v">240 km</div><div class="hs-l">parcours phare</div></div>
+        <div class="hs"><div class="hs-v">8 000</div><div class="hs-l">bénévoles</div></div>
+        <div class="hs"><div class="hs-v">181</div><div class="hs-l">villages en fête</div></div>
+      </div>
+    </div>
+
+    <!-- 1 · NOTRE HISTOIRE -->
+    <div class="page histoire-page">
+      <div class="hist-hero">
+        <div class="hist-hero-topo"></div>
+        <div style="position:relative;z-index:1">
+          <div class="hist-tag">Notre histoire</div>
+          <h2 class="hist-title">32 ans de vélo,<br>de cols et de <em>convivialité.</em></h2>
+          <p class="hist-lead">De 1 296 intrépides sous la neige en 1992 à plus de 11 000 cyclistes chaque année. L'Ardéchoise, c'est l'histoire d'une passion devenue légende.</p>
+        </div>
+      </div>
+      <div class="hist-body">
+        <div class="hist-left">
+          <div class="hist-section-title">La naissance d'une légende</div>
+          <p class="hist-text">Tout commence en 1988, quand une bande de passionnés fonde le Cyclo Club de Saint-Félicien. Le rêve : organiser une course cycliste dans les cols ardéchois, ce territoire de montagne sauvage et magnifique du nord de l'Ardèche.</p>
+          <p class="hist-text">Le 20 juin 1992, sous la pluie, le froid et même la neige, 1 296 coureurs s'élancent pour la première Ardéchoise. Départ à Saint-Félicien, arrivée à Lalouvesc. Certains sont contraints d'abandonner, la moitié seulement atteint l'arrivée. Mais l'aventure est lancée.</p>
+          <p class="hist-text">Ce qui n'était qu'un tour de canton est devenu le premier rassemblement cycliste de masse sur route de montagne en Europe — et une fête inoubliable pour ceux qui ont la chance d'y participer.</p>
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-year">1992</div>
+              <div class="tl-content"><div class="tl-title">La première édition</div><div class="tl-desc">1 296 participants sous la neige. Départ Saint-Félicien, arrivée Lalouvesc.</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-year">1998</div>
+              <div class="tl-content"><div class="tl-title">La barre des 10 000</div><div class="tl-desc">11 184 inscrits. L'Ardéchoise dépasse les 10 000 participants pour la première fois.</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-year">2005</div>
+              <div class="tl-content"><div class="tl-title">La formule 3 jours</div><div class="tl-desc">Naissance de la randonnée sur plusieurs jours — l'Ardèche en itinérance.</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-year gold">2016</div>
+              <div class="tl-content"><div class="tl-title">Le record absolu ★</div><div class="tl-desc">16 768 inscrits — le record de la 25ème édition, jamais égalé depuis.</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-year">2022</div>
+              <div class="tl-content"><div class="tl-title">L'Ultra et le Gravel</div><div class="tl-desc">Naissance de l'Ardéchoise Ultra (600 km, 31 cols) et des premiers circuits Gravel.</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-year">2026</div>
+              <div class="tl-content"><div class="tl-title">La 33ème édition</div><div class="tl-desc">Trail en septembre, nouveaux parcours, gamification. L'Ardéchoise se réinvente.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="hist-right">
+          <div class="hist-section-title">Nos valeurs</div>
+          <div class="value-cards">
+            <div class="val-card">
+              <div class="val-icon">🤝</div>
+              <div><div class="val-title">Vivre-ensemble</div><div class="val-desc">L'Ardéchoise, c'est une famille. 8 000 bénévoles dans 181 villages qui donnent leur temps pour que chaque cycliste vive une expérience inoubliable.</div></div>
+            </div>
+            <div class="val-card">
+              <div class="val-icon">🏔️</div>
+              <div><div class="val-title">Le territoire ardéchois</div><div class="val-desc">Né à Saint-Félicien, l'événement parcourt les plus beaux cols du Massif Central. L'Ardèche est au cœur de tout — ses paysages, sa gastronomie, ses villages.</div></div>
+            </div>
+            <div class="val-card">
+              <div class="val-icon">🌱</div>
+              <div><div class="val-title">Un événement responsable</div><div class="val-desc">Rampes d'eau pour réduire le plastique, circuits courts pour les ravitaillements, engagement avec les producteurs locaux. L'Ardéchoise avance avec son temps.</div></div>
+            </div>
+            <div class="val-card">
+              <div class="val-icon">⚡</div>
+              <div><div class="val-title">L'innovation au service de tous</div><div class="val-desc">VAE, Gravel, Trail, GPX digital, Strava officiel. L'Ardéchoise s'ouvre à de nouveaux publics tout en restant fidèle à son ADN.</div></div>
+            </div>
+            <div class="val-card">
+              <div class="val-icon">👨‍👩‍👧</div>
+              <div><div class="val-title">Pour tous</div><div class="val-desc">Du débutant au vétéran, du cyclosportif à l'Ultra, du 8 ans en Ardéchoise des Jeunes au néo-retraité en VAE — l'Ardéchoise a un parcours pour chacun.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hist-quote">
+        <p class="hq-text">Ce n'est pas seulement une course. C'est une épopée humaine qui se renouvelle chaque année. L'Ardèche offre ses cols, ses villages et sa chaleur — et des milliers de cyclistes viennent chercher quelque chose qui dépasse le sport.</p>
+        <div class="hq-source">— L'Association ACP, fondatrice de l'Ardéchoise</div>
+      </div>
+    </div>
+
+    <!-- 2 · ÉPREUVES -->
+    <div class="page ep-page">
+      <div class="page-header">
+        <div class="page-tag">Toutes les formules</div>
+        <h2 class="page-title">Choisis ton <em>aventure.</em></h2>
+      </div>
+      <div class="ep-grid">
+        <div class="ep feat" onclick="goTo(3)">
+          <span class="ep-badge perf">Performance · Épreuve phare</span>
+          <div class="ep-title">L'Ardéchoise</div>
+          <div class="ep-dist">240 km</div>
+          <p class="ep-desc">L'épreuve qui donne son nom à l'événement. Chrono officiel, cols mythiques, route fermée par secteur. Le défi de l'Ardèche.</p>
+          <div class="ep-details">
+            <div class="ep-det"><strong>6 500 D+</strong><span>Dénivelé</span></div>
+            <div class="ep-det"><strong>6 cols</strong><span>Mythiques</span></div>
+            <div class="ep-det"><strong>Chrono</strong><span>Officiel</span></div>
+          </div>
+          <div class="ep-arrow">Découvrir →</div>
+        </div>
+        <div class="ep">
+          <span class="ep-badge cyclo">Cyclo</span>
+          <div class="ep-title">Randonnée</div>
+          <div class="ep-dist">2, 3 ou 4 jours</div>
+          <p class="ep-desc">L'Ardèche en itinérance. Bagages transportés, hébergements inclus, convivialité garantie à chaque étape.</p>
+          <div class="ep-details">
+            <div class="ep-det"><strong>30+</strong><span>Parcours</span></div>
+            <div class="ep-det"><strong>4 jours</strong><span>Maximum</span></div>
+            <div class="ep-det"><strong>Hébergements</strong><span>Inclus</span></div>
+          </div>
+          <div class="ep-arrow">Voir les itinéraires →</div>
+        </div>
+        <div class="ep">
+          <span class="ep-badge" style="background:rgba(255,255,255,.07);color:rgba(255,255,255,.4)">Extrême</span>
+          <div class="ep-title">Ultra Ardéchoise</div>
+          <div class="ep-dist">600+ km</div>
+          <p class="ep-desc">31 cols. En autonomie. Pour ceux qui ne font pas les choses à moitié — une expédition, pas une course.</p>
+          <div class="ep-details">
+            <div class="ep-det"><strong>31 cols</strong><span>En continu</span></div>
+            <div class="ep-det"><strong>~65</strong><span>Finishers</span></div>
+          </div>
+          <div class="ep-arrow">En savoir plus →</div>
+        </div>
+        <div class="ep">
+          <span class="ep-badge vae">Inclusif</span>
+          <div class="ep-title">VAE & Gravel</div>
+          <div class="ep-dist">Parcours dédiés</div>
+          <p class="ep-desc">Parcours VAE le mercredi, circuits Gravel inédits sur chemins et routes secondaires. L'Ardèche pour tout le monde.</p>
+          <div class="ep-details">
+            <div class="ep-det"><strong>Mercredi</strong><span>Journée VAE</span></div>
+            <div class="ep-det"><strong>Gravel</strong><span>Nouveauté</span></div>
+          </div>
+          <div class="ep-arrow">Voir les parcours →</div>
+        </div>
+        <div class="ep ep-trail" onclick="goTo(4)">
+          <span class="ep-badge trail">Nouveauté · Sept. 2026</span>
+          <div class="ep-title">Trail Ardéchoise</div>
+          <div class="ep-dist">20 – 110 km</div>
+          <p class="ep-desc">Les sentiers ardéchois, les châtaigniers, les crêtes volcaniques. En septembre, l'Ardèche court.</p>
+          <div class="ep-details">
+            <div class="ep-det"><strong>3 formats</strong><span>Tous niveaux</span></div>
+            <div class="ep-det"><strong>Sept. 2026</strong><span>Nouveauté</span></div>
+          </div>
+          <div class="ep-arrow">Découvrir →</div>
+        </div>
+        <div class="ep" style="background:rgba(232,201,58,.06);border-color:rgba(232,201,58,.18);display:flex;align-items:center;justify-content:center;text-align:center;cursor:default;">
+          <div>
+            <div style="font-size:42px;margin-bottom:12px;">🎟️</div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--j);">9 – 13 Juin 2026</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:4px;">Saint-Félicien · Ardèche</div>
+            <a href="#" class="btn-p" style="margin-top:16px;font-size:11px;padding:10px 18px;">S'inscrire</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 · L'ARDÉCHOISE 240km -->
+    <div class="page phare-page">
+      <div class="phare-hero">
+        <div class="phare-bg-topo"></div>
+        <div style="position:relative;z-index:1">
+          <div class="phare-pretitle">L'épreuve phare · Cyclosportif</div>
+          <h2 class="phare-title">L'Ardéchoise<br><em>240 km.</em></h2>
+          <p class="phare-sub">La course qui donne son nom à l'événement. Chrono officiel, cols mythiques, la montagne ardéchoise dans toute sa splendeur — et toute sa rigueur.</p>
+          <div class="phare-kpis">
+            <div class="pk"><div class="pk-v">240</div><div class="pk-l">kilomètres</div></div>
+            <div class="pk"><div class="pk-v">6 500</div><div class="pk-l">D+ cumulé</div></div>
+            <div class="pk"><div class="pk-v">6</div><div class="pk-l">cols</div></div>
+            <div class="pk"><div class="pk-v">Chrono</div><div class="pk-l">officiel</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="phare-body">
+        <div>
+          <div class="elev-card">
+            <div class="elev-lbl">Profil d'élévation — L'Ardéchoise (240 km)</div>
+            <svg width="100%" viewBox="0 0 500 130" preserveAspectRatio="none">
+              <defs><linearGradient id="eg3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E8C93A" stop-opacity=".35"/><stop offset="100%" stop-color="#E8C93A" stop-opacity="0"/></linearGradient></defs>
+              <path d="M0 120 L30 114 L60 98 L90 80 L115 62 L130 48 L140 36 L150 44 L170 66 L190 80 L210 62 L228 42 L240 28 L250 16 L260 28 L272 46 L290 58 L310 46 L325 30 L340 18 L352 12 L364 24 L378 42 L400 56 L420 46 L434 30 L448 18 L460 24 L475 42 L490 60 L500 72 L500 130 L0 130Z" fill="url(#eg3)"/>
+              <path d="M0 120 L30 114 L60 98 L90 80 L115 62 L130 48 L140 36 L150 44 L170 66 L190 80 L210 62 L228 42 L240 28 L250 16 L260 28 L272 46 L290 58 L310 46 L325 30 L340 18 L352 12 L364 24 L378 42 L400 56 L420 46 L434 30 L448 18 L460 24 L475 42 L490 60 L500 72" fill="none" stroke="#E8C93A" stroke-width="1.8"/>
+              <circle cx="140" cy="36" r="3" fill="#E8C93A"/>
+              <text x="140" y="28" fill="rgba(255,255,255,.6)" font-size="8" text-anchor="middle" font-family="DM Sans">Escrinet</text>
+              <circle cx="250" cy="16" r="3" fill="#E8C93A"/>
+              <text x="250" y="9" fill="rgba(255,255,255,.6)" font-size="8" text-anchor="middle" font-family="DM Sans">Mézilhac</text>
+              <circle cx="352" cy="12" r="3" fill="#E8C93A"/>
+              <text x="352" y="5" fill="rgba(255,255,255,.6)" font-size="8" text-anchor="middle" font-family="DM Sans">Lalouvesc</text>
+              <circle cx="448" cy="18" r="3" fill="#E8C93A"/>
+              <text x="448" y="11" fill="rgba(255,255,255,.6)" font-size="8" text-anchor="middle" font-family="DM Sans">St-Agrève</text>
+            </svg>
+            <div class="elev-cols-list">
+              <span class="elev-col-tag"><span class="ec-dot"></span>Col de l'Escrinet (789m)</span>
+              <span class="elev-col-tag"><span class="ec-dot"></span>Col de Mézilhac (1 119m)</span>
+              <span class="elev-col-tag"><span class="ec-dot"></span>Col de Lalouvesc (1 048m)</span>
+              <span class="elev-col-tag"><span class="ec-dot"></span>Col de la Croix de Boutière</span>
+            </div>
+            <div class="elev-stats">
+              <div class="es"><div class="es-v">240</div><div class="es-l">km</div></div>
+              <div class="es"><div class="es-v">6 500</div><div class="es-l">D+</div></div>
+              <div class="es"><div class="es-v">6</div><div class="es-l">cols</div></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;">Les cols mythiques</div>
+          <div class="cols-list">
+            <div class="col-i"><div><div class="col-name">Col de Mézilhac</div><div class="col-sub">Le sommet de l'Ardéchoise</div></div><div style="text-align:right"><div class="col-alt">1 119</div><div class="col-alt-l">m altitude</div></div></div>
+            <div class="col-i"><div><div class="col-name">Col de Lalouvesc</div><div class="col-sub">Col emblématique</div></div><div style="text-align:right"><div class="col-alt">1 048</div><div class="col-alt-l">m altitude</div></div></div>
+            <div class="col-i"><div><div class="col-name">Col de la Croix de Boutière</div><div class="col-sub">Vue panoramique</div></div><div style="text-align:right"><div class="col-alt">1 075</div><div class="col-alt-l">m altitude</div></div></div>
+            <div class="col-i"><div><div class="col-name">Col de l'Escrinet</div><div class="col-sub">L'entrée en matière</div></div><div style="text-align:right"><div class="col-alt">789</div><div class="col-alt-l">m altitude</div></div></div>
+          </div>
+          <div class="chrono-box">
+            <div style="font-size:20px">⏱️</div>
+            <div class="chrono-txt"><strong>Chronométrage officiel</strong> sur l'ensemble du parcours · Classement en ligne dans la soirée · Segment Strava officiel sur Mézilhac</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 · TRAIL -->
+    <div class="page trail-page">
+      <div class="trail-hero-s">
+        <div class="trail-diag"></div>
+        <div style="position:relative;z-index:1">
+          <div class="trail-pretitle">Nouveauté · Septembre 2026</div>
+          <h2 class="trail-main-t">L'Ardèche<br><em>court.</em></h2>
+          <div class="trail-date-pill">📅 Septembre 2026 · Saint-Félicien</div>
+        </div>
+      </div>
+      <div class="trail-body-s">
+        <div>
+          <p style="font-family:'Lora',serif;font-size:14px;color:rgba(255,255,255,.65);font-style:italic;line-height:1.75;margin-bottom:22px;">Châtaigniers, crêtes volcaniques, gorges sauvages. L'Ardèche est un terrain de jeu naturel taillé pour le trail. Cet automne, L'Ardéchoise ouvre un nouveau chapitre — pour les coureurs de tous niveaux.</p>
+          <div class="tf"><div class="tf-dist">20 km</div><div><div class="tf-name">Les Crêtes</div><div class="tf-sub">Accessible · Trail nature · Idéal débutants</div></div><div class="tf-dp">800 D+</div></div>
+          <div class="tf"><div class="tf-dist">50 km</div><div><div class="tf-name">La Châtaigne</div><div class="tf-sub">Intermédiaire · Cœur de l'Ardèche</div></div><div class="tf-dp">2 800 D+</div></div>
+          <div class="tf"><div class="tf-dist">110 km</div><div><div class="tf-name">L'Ultra Ardèche</div><div class="tf-sub">Élite · La traversée intégrale</div></div><div class="tf-dp">5 500 D+</div></div>
+          <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;">
+            <a href="#" class="btn-trail">Pré-inscription Trail</a>
+            <button class="btn-s" style="font-size:11px;padding:10px 18px;">Programme complet</button>
+          </div>
+        </div>
+        <div class="trail-info">
+          <div class="ti-card"><span class="ti-ico">🍂</span><div class="ti-title">Septembre en Ardèche</div><p class="ti-body">Lumière d'automne, châtaigniers dorés, cols libérés de la chaleur estivale. L'Ardèche en septembre est la saison parfaite pour courir. Saint-Félicien vivra une deuxième fête de l'année.</p></div>
+          <div class="ti-card"><span class="ti-ico">🏔️</span><div class="ti-title">Des sentiers uniques</div><p class="ti-body">Sentiers de châtaigniers, crêtes du Mézenc, gorges de l'Ardèche, cols volcaniques. La diversité des paysages ardéchois offre des parcours trail d'exception.</p></div>
+          <div class="ti-card"><span class="ti-ico">🎉</span><div class="ti-title">L'esprit Ardéchoise</div><p class="ti-body">Village trail, ravitaillements locaux, bénévoles dans les cols. L'ADN de l'Ardéchoise — convivialité et vivre-ensemble — à chaque kilomètre.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 · CHALLENGES -->
+    <div class="page chall-page">
+      <div class="page-header">
+        <div class="page-tag">Gamification · Nouveauté 2026</div>
+        <h2 class="page-title">Les <em>Challenges</em> Ardéchoise.</h2>
+      </div>
+      <div class="chall-grid-inner">
+        <div class="cc c1">
+          <div class="cc-top"><span class="cc-ico">🏆</span><div class="cc-bg">01</div><div class="cc-name">Attrape-moi<br><em>si tu peux</em></div><p class="cc-desc">Un cycliste professionnel s'élance après toi dans la montée avec un départ différé. Même col, même chrono. Pierre Latour ou un ambassadeur ardéchois dans ta roue — le défi ultime.</p></div>
+          <div class="cc-bot"><span class="cc-tag y">Pro vs amateur</span><span class="cc-tag p">Pierre Latour</span><span class="cc-tag y">Lot à gagner</span></div>
+        </div>
+        <div class="cc c2">
+          <div class="cc-top"><span class="cc-ico">⚡</span><div class="cc-bg">02</div><div class="cc-name">Segment<br><em>de la Mort</em></div><p class="cc-desc">Un segment Strava officiel sur les 4 km les plus durs du col de Mézilhac. Fan zone avec écran géant, temps diffusés en direct, podium dédié à l'arrivée.</p></div>
+          <div class="cc-bot"><span class="cc-tag o">Strava officiel</span><span class="cc-tag o">Col de Mézilhac</span><span class="cc-tag o">Podium live</span></div>
+        </div>
+        <div class="cc c3">
+          <div class="cc-top"><span class="cc-ico">🏅</span><div class="cc-bg">03</div><div class="cc-name">La <em>Chevalière</em><br>Ardéchoise</div><p class="cc-desc">Chaque finish t'offre une chevalière argentée. À ta 3ème participation, la chevalière dorée — objet de culte pour te donner une raison de revenir chaque année.</p></div>
+          <div class="cc-bot"><span class="cc-tag p">Finisher ×3</span><span class="cc-tag p">Chevalière dorée</span><span class="cc-tag p">Fidélité</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 · SALON -->
+    <div class="page salon-page">
+      <div class="salon-hero-s">
+        <div class="hist-hero-topo"></div>
+        <div style="position:relative;z-index:1">
+          <div class="salon-tag">Ouvert à tous · Entrée libre</div>
+          <h2 class="salon-title-h">Le Salon <em>de l'Ardéchoise.</em></h2>
+          <p class="salon-sub-h">Cycliste ou pas — familles, supporters, curieux — venez vivre l'événement de l'intérieur. Concerts, animations, gastronomie, village VR. La fête est pour tout le monde.</p>
+        </div>
+      </div>
+      <div class="salon-grid-s">
+        <div class="sc"><div class="sc-top">🚴</div><div class="sc-body"><div class="sc-title">Expo vélos & innovation</div><p class="sc-desc">Vélo de route, gravel, VAE, accessoires connectés. Testez, comparez, découvrez les dernières innovations.</p></div></div>
+        <div class="sc"><div class="sc-top">🥘</div><div class="sc-body"><div class="sc-title">Village gastronomique</div><p class="sc-desc">Producteurs ardéchois, châtaigne, charcuterie, fromages. L'Ardèche dans l'assiette, tout au long de la semaine.</p></div></div>
+        <div class="sc"><div class="sc-top">🎮</div><div class="sc-body"><div class="sc-title">Village des défis VR</div><p class="sc-desc">Testez les 2 derniers km du col de Mézilhac en réalité virtuelle. Sprint sur home-trainer. Mini-course draisienne pour les enfants.</p></div></div>
+        <div class="sc"><div class="sc-top">🎵</div><div class="sc-body"><div class="sc-title">Concerts & animations</div><p class="sc-desc">Concerts gratuits chaque soir, DJ sets, animations place des Myrtilles. Saint-Félicien en fête du mardi au samedi.</p></div></div>
+        <div class="sc"><div class="sc-top">👶</div><div class="sc-body"><div class="sc-title">L'Ardéchoise des Jeunes</div><p class="sc-desc">Parcours jeunes cyclistes de 8 à 16 ans. L'aventure commence tôt à Saint-Félicien — pour que la transmission continue.</p></div></div>
+        <div class="sc"><div class="sc-top">📺</div><div class="sc-body"><div class="sc-title">Fan zone & écran géant</div><p class="sc-desc">Suivez les coureurs en direct sur les cols. Temps, classements, live streaming — l'ambiance du peloton depuis le village.</p></div></div>
+      </div>
+      <div class="salon-banner-s">
+        <div><div class="sbs-title">Entrée libre · 9 – 13 juin 2026 · Saint-Félicien</div><div class="sbs-sub">Participants, familles, supporters, curieux — tout le monde est bienvenu à l'Ardéchoise.</div></div>
+        <a href="#" class="btn-white">Programme complet</a>
+      </div>
+    </div>
+
+    <!-- 7 · TÉMOIGNAGES -->
+    <div class="page pros-page">
+      <div class="page-header">
+        <div class="page-tag">Ils l'ont vécu</div>
+        <h2 class="page-title">Ce que les pros disent<br>de l'<em>Ardéchoise.</em></h2>
+      </div>
+      <div class="pros-grid-s">
+        <div class="pc"><p class="pc-q">L'Ardéchoise, c'est mon Ardèche natale transformée en arène. Les cols, les bénévoles, l'ambiance des villages — nulle part ailleurs en France tu ne vis ça.</p><div class="pc-info"><div class="pc-av" style="background:var(--v)">PL</div><div><div class="pc-name">Pierre Latour</div><div class="pc-role">Cycliste professionnel · Ardéchois d'origine</div><div class="pc-stars">★★★★★</div></div></div></div>
+        <div class="pc"><p class="pc-q">Je pensais connaître la montagne. L'Ardéchoise m'a rappelé que le vrai défi, c'est partager 200 km avec 10 000 passionnés qui poussent aussi fort que toi.</p><div class="pc-info"><div class="pc-av" style="background:var(--vert)">CM</div><div><div class="pc-name">Clément Mahieu</div><div class="pc-role">Vainqueur Vélo Marathon · Ardéchoise 2023</div><div class="pc-stars">★★★★★</div></div></div></div>
+        <div class="pc"><p class="pc-q">Ce qui est unique ici, c'est que tu passes d'un village en fête à un col balayé par le vent en 10 minutes. L'Ardèche ne triche pas — elle t'offre tout en même temps.</p><div class="pc-info"><div class="pc-av" style="background:var(--trail)">SR</div><div><div class="pc-name">Sophie Renard</div><div class="pc-role">Ambassadrice VAE · Influenceuse vélo</div><div class="pc-stars">★★★★★</div></div></div></div>
+      </div>
+    </div>
+
+    <!-- 8 · GPX -->
+    <div class="page gpx-page">
+      <div class="page-header">
+        <div class="page-tag" style="color:var(--j)">L'Ardéchoise connectée</div>
+        <h2 class="page-title">Roule <em>toute l'année.</em></h2>
+      </div>
+      <div class="gpx-body-s">
+        <div>
+          <p class="gpx-lead">L'Ardéchoise GPX : accède aux parcours officiels 365 jours par an, accumule des points, débloque des badges exclusifs et garde ton accès prioritaire aux inscriptions de l'édition suivante.</p>
+          <div class="gpx-feats">
+            <div class="gf"><div class="gf-ico">🗺️</div><div class="gf-txt"><strong>Traces GPX officielles</strong> — tous les parcours accessibles hors-événement</div></div>
+            <div class="gf"><div class="gf-ico">⚡</div><div class="gf-txt"><strong>Segments Strava officiels</strong> — cols chronométrés toute l'année avec classement live</div></div>
+            <div class="gf"><div class="gf-ico">🏅</div><div class="gf-txt"><strong>Badges & récompenses</strong> — points fidélité convertibles en produits dérivés exclusifs</div></div>
+            <div class="gf"><div class="gf-ico">🎟️</div><div class="gf-txt"><strong>Accès prioritaire</strong> — inscription anticipée réservée aux membres actifs</div></div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;">
+            <a href="#" class="strava-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/></svg>Club Strava Officiel</a>
+            <a href="#" class="btn-p" style="background:rgba(255,255,255,.15);color:#fff;font-size:11px;padding:10px 16px;">Accéder aux GPX</a>
+          </div>
+        </div>
+        <div class="mock">
+          <div class="mock-h"><div class="mock-ht">Mon Ardéchoise</div><div class="mock-hb">GPX 2026</div></div>
+          <div class="mock-stats"><div class="ms"><div class="ms-v">3 420</div><div class="ms-l">km</div></div><div class="ms"><div class="ms-v">47k</div><div class="ms-l">D+</div></div><div class="ms"><div class="ms-v">1 240</div><div class="ms-l">pts</div></div></div>
+          <div class="mock-prog"><div class="mp-l">Challenge juin — 3 000 m D+ en juin</div><div class="mp-row"><span>2 150 m accomplis</span><span style="color:var(--j)">72%</span></div><div class="mp-bar"><div class="mp-fill" style="width:72%;background:var(--j)"></div></div></div>
+          <div class="mock-prog"><div class="mp-l">Segment Mézilhac — Mon meilleur temps</div><div class="mp-row"><span>18:43 · objectif 17:30</span><span style="color:#FC4C02">Strava</span></div><div class="mp-bar"><div class="mp-fill" style="width:85%;background:#FC4C02"></div></div></div>
+          <div class="mock-badges"><div class="mb"><div class="mb-i">🏔️</div><div class="mb-t">Mézilhac</div></div><div class="mb"><div class="mb-i">⚡</div><div class="mb-t">Finisher</div></div><div class="mb" style="opacity:.3"><div class="mb-i">🥇</div><div class="mb-t">Chevalière or</div></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="page-dots" id="dots"></div>
+
+<script>
+const TOTAL=9;let cur=0;
+function buildDots(){const d=document.getElementById('dots');for(let i=0;i<TOTAL;i++){const el=document.createElement('div');el.className='pd'+(i===0?' active':'');el.onclick=()=>goTo(i);d.appendChild(el);}}
+function goTo(n){if(n<0||n>=TOTAL)return;cur=n;document.getElementById('pages').style.transform=`translateX(-${n*100}%)`;document.querySelectorAll('.sb-item').forEach((el,i)=>el.classList.toggle('active',i===n));document.querySelectorAll('.pd').forEach((el,i)=>el.classList.toggle('active',i===n));}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')goTo(cur+1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')goTo(cur-1);});
+let tx=0;
+document.querySelector('.main').addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+document.querySelector('.main').addEventListener('touchend',e=>{const dx=tx-e.changedTouches[0].clientX;if(Math.abs(dx)>60)goTo(dx>0?cur+1:cur-1);},{passive:true});
+buildDots();
+</script>
+</body>
+</html>
